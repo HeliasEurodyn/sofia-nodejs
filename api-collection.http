@@ -1,0 +1,185 @@
+############################################################
+# ENV
+############################################################
+@baseUrl = http://localhost:3010
+
+
+############################################################
+# 1) LOGIN
+# - creates session
+# - sets httpOnly cookie: sid
+# - returns access + refresh tokens
+############################################################
+### LOGIN
+POST http://localhost:3010/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "1234"
+}
+
+@accessToken = @response.body.accessToken
+@refreshToken = @response.body.refreshToken
+
+
+
+
+############################################################
+# 2) GET STUDENTS (SECURED)
+############################################################
+### GET STUDENTS
+GET {{baseUrl}}/api/students
+Authorization: Bearer {{accessToken}}
+
+> {%
+  console.log("📚 GET STUDENTS:", response.status);
+%}
+
+
+############################################################
+# 3) CREATE STUDENT (SECURED)
+############################################################
+### CREATE STUDENT
+POST {{baseUrl}}/api/students
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "student_obj": {
+    "id": 99,
+    "first_name": "REST",
+    "last_name": "Client",
+    "email": "rest.client@test.com"
+  }
+}
+
+> {%
+  console.log("➕ STUDENT CREATED");
+%}
+
+
+############################################################
+# 4) UPDATE STUDENT (SECURED)
+############################################################
+### UPDATE STUDENT
+PUT {{baseUrl}}/api/students/99
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "student_obj": {
+    "id": 99,
+    "first_name": "REST",
+    "last_name": "Client Updated",
+    "email": "rest.client.updated@test.com"
+  }
+}
+
+> {%
+  console.log("✏️ STUDENT UPDATED");
+%}
+
+
+############################################################
+# 5) GET STUDENTS AGAIN
+############################################################
+### GET STUDENTS AGAIN
+GET {{baseUrl}}/api/students
+Authorization: Bearer {{accessToken}}
+
+
+############################################################
+# 6) REFRESH TOKENS
+# - requires refreshToken in body
+# - requires sid cookie automatically
+############################################################
+### REFRESH TOKENS
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+  console.log("🔄 TOKENS REFRESHED");
+%}
+
+
+############################################################
+# 7) GET STUDENTS AFTER REFRESH
+############################################################
+### GET STUDENTS AFTER REFRESH
+GET {{baseUrl}}/api/students
+Authorization: Bearer {{accessToken}}
+
+
+############################################################
+# 8) LOGOUT (CURRENT DEVICE)
+# - revokes session
+# - clears cookie
+############################################################
+### LOGOUT (CURRENT DEVICE)
+POST {{baseUrl}}/api/auth/logout
+
+> {%
+  console.log("🚪 LOGOUT CURRENT DEVICE");
+%}
+
+
+############################################################
+# 9) SHOULD FAIL (AFTER LOGOUT)
+############################################################
+### SHOULD FAIL - NO SESSION
+GET {{baseUrl}}/api/students
+Authorization: Bearer {{accessToken}}
+
+> {%
+  console.log("⛔ EXPECT 401");
+%}
+
+
+############################################################
+# 10) LOGIN AGAIN (FOR LOGOUT-ALL)
+############################################################
+### LOGIN AGAIN
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+  console.log("🔑 LOGIN AGAIN");
+%}
+
+
+############################################################
+# 11) LOGOUT ALL DEVICES (SECURED)
+############################################################
+### LOGOUT ALL DEVICES
+POST {{baseUrl}}/api/auth/logout-all
+Authorization: Bearer {{accessToken}}
+
+> {%
+  console.log("🔥 LOGOUT ALL DEVICES");
+%}
+
+
+############################################################
+# 12) SHOULD FAIL EVERYWHERE (AFTER LOGOUT-ALL)
+############################################################
+### SHOULD FAIL - ALL DEVICES LOGGED OUT
+GET {{baseUrl}}/api/students
+Authorization: Bearer {{accessToken}}
+
+> {%
+  console.log("⛔ EXPECT 401 (LOGOUT-ALL)");
+%}

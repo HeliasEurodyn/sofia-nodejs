@@ -83,6 +83,31 @@ module.exports = {
       }
    },
 
+   getUsers: async (id) => {
+      const conn = await pool.getConnection();
+      const data = {};
+
+      try {
+
+         /* SELECTION QUERY - user - */
+
+         const userFilters = {
+            user_obj_id: id
+         };
+         const [user_results] = await conn.query(
+         `SELECT username, id, email
+          FROM  ( SELECT id ,  username ,  email   FROM  user  ) user;`, userFilters );
+
+         return user_results;
+
+      } catch (err) {
+         throw err;
+      } finally {
+         conn.release();
+      }
+   },
+
+
    delete: async (id) => {
       const conn = await pool.getConnection();
       const data = {};
