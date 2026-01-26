@@ -1,6 +1,15 @@
 const ProcessTagsSelectorListModel = require('../../models/list/ProcessTagsSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => ProcessTagsSelectorListModel.getList(data)
-};
+      return ProcessTagsSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

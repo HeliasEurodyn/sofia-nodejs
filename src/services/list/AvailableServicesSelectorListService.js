@@ -1,10 +1,59 @@
 const AvailableServicesSelectorListModel = require('../../models/list/AvailableServicesSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => AvailableServicesSelectorListModel.getList(data),
-   getSqlgf1List: (data) => AvailableServicesSelectorListModel.getSqlgf1List(data),
-   getSqlgf2List: (data) => AvailableServicesSelectorListModel.getSqlgf2List(data),
-   getSqlgf3List: (data) => AvailableServicesSelectorListModel.getSqlgf3List(data),
-   getSqlgf4List: (data) => AvailableServicesSelectorListModel.getSqlgf4List(data)
-};
+      return AvailableServicesSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getSqlgf1List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return AvailableServicesSelectorListModel.getSqlgf1List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf2List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return AvailableServicesSelectorListModel.getSqlgf2List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf3List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return AvailableServicesSelectorListModel.getSqlgf3List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf4List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return AvailableServicesSelectorListModel.getSqlgf4List({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getSqlgf1List,
+      getSqlgf2List,
+      getSqlgf3List,
+      getSqlgf4List
+   };

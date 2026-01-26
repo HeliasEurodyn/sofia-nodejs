@@ -1,6 +1,15 @@
 const DataCatalogueCategorySelectorListModel = require('../../models/list/DataCatalogueCategorySelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => DataCatalogueCategorySelectorListModel.getList(data)
-};
+      return DataCatalogueCategorySelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

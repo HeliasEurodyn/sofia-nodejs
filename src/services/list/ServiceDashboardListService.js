@@ -1,6 +1,15 @@
 const ServiceDashboardListModel = require('../../models/list/ServiceDashboardListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => ServiceDashboardListModel.getList(data)
-};
+      return ServiceDashboardListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

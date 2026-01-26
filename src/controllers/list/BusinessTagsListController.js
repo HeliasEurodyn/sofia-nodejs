@@ -4,7 +4,13 @@ const BusinessTagsListService = require('../../services/list/BusinessTagsListSer
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await BusinessTagsListService.getList(req.body);
+      const results = await BusinessTagsListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

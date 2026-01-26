@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -23,7 +23,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -46,7 +46,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -68,7 +68,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -76,13 +76,12 @@ module.exports = {
 
          /* SELECTION QUERY - provide_data - */
 
-         const provide_dataFilters = {
-            provide_data_obj_id: id
-         };
-         const [provide_data_results] = await conn.query(
+         const provide_dataFilters = [id
+         ];
+         const [provide_data_results] = await conn.execute(
          `SELECT notification_send, id, created_by, created_on, modified_by, modified_on, file, file_name, file_size, file_type, title, description, service_offering_id, provide_user
           FROM provide_data
-         WHERE provide_data.id = :provide_data_obj_id;`, provide_dataFilters );
+         WHERE provide_data.id = ? `, provide_dataFilters );
 
          let provide_data = {};
          data.provide_data_obj = {};
@@ -90,6 +89,8 @@ module.exports = {
          {
             provide_data = provide_data_results[0];
             data.provide_data_obj = provide_data;
+         } else {
+            return data;
          }
 
          return data;
@@ -101,7 +102,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -109,14 +110,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const provide_dataFilters = {
-            provide_data_obj_id: id
-         };
+         const provide_dataFilters = [id
+         ];
 
-         const [provide_data_results] = await conn.query(
+         const [provide_data_results] = await conn.execute(
          `SELECT id
           FROM provide_data
-         WHERE provide_data.id = :provide_data_obj_id;`, provide_dataFilters );
+         WHERE provide_data.id = ? `, provide_dataFilters );
 
          let provide_data = {};
          data.provide_data_obj = {};
@@ -130,7 +130,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const provide_data_obj = data.provide_data_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM provide_data WHERE id = :id`, provide_data_obj );
 
          await conn.commit();

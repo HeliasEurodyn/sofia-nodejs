@@ -1,6 +1,15 @@
 const MyOfferedServicesForLocalApiListModel = require('../../models/list/MyOfferedServicesForLocalApiListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MyOfferedServicesForLocalApiListModel.getList(data)
-};
+      return MyOfferedServicesForLocalApiListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

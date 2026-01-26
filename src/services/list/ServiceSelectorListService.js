@@ -1,6 +1,15 @@
 const ServiceSelectorListModel = require('../../models/list/ServiceSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => ServiceSelectorListModel.getList(data)
-};
+      return ServiceSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

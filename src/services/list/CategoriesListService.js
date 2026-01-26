@@ -1,6 +1,15 @@
 const CategoriesListModel = require('../../models/list/CategoriesListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => CategoriesListModel.getList(data)
-};
+      return CategoriesListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

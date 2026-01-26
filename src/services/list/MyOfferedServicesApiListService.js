@@ -1,10 +1,59 @@
 const MyOfferedServicesApiListModel = require('../../models/list/MyOfferedServicesApiListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MyOfferedServicesApiListModel.getList(data),
-   getCategoryGroupList: (data) => MyOfferedServicesApiListModel.getCategoryGroupList(data),
-   getServiceGroupList: (data) => MyOfferedServicesApiListModel.getServiceGroupList(data),
-   getBusinessObjectGroupList: (data) => MyOfferedServicesApiListModel.getBusinessObjectGroupList(data),
-   getUsersGroupList: (data) => MyOfferedServicesApiListModel.getUsersGroupList(data)
-};
+      return MyOfferedServicesApiListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCategoryGroupList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MyOfferedServicesApiListModel.getCategoryGroupList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getServiceGroupList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MyOfferedServicesApiListModel.getServiceGroupList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getBusinessObjectGroupList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MyOfferedServicesApiListModel.getBusinessObjectGroupList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getUsersGroupList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MyOfferedServicesApiListModel.getUsersGroupList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCategoryGroupList,
+      getServiceGroupList,
+      getBusinessObjectGroupList,
+      getUsersGroupList
+   };

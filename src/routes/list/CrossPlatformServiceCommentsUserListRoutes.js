@@ -2,6 +2,6 @@ const express = require('express');
 const router = express.Router();
 const CrossPlatformServiceCommentsUserListController = require('../../controllers/list/CrossPlatformServiceCommentsUserListController');
 
-router.get('/', CrossPlatformServiceCommentsUserListController.getList);
+router.post('/', CrossPlatformServiceCommentsUserListController.getList);
 
 module.exports  = router;

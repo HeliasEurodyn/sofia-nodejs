@@ -1,6 +1,15 @@
 const ClustersSelectorListModel = require('../../models/list/ClustersSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => ClustersSelectorListModel.getList(data)
-};
+      return ClustersSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

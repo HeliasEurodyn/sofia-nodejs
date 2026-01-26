@@ -1,6 +1,15 @@
 const MySubscriptionsGalleryListModel = require('../../models/list/MySubscriptionsGalleryListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MySubscriptionsGalleryListModel.getList(data)
-};
+      return MySubscriptionsGalleryListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

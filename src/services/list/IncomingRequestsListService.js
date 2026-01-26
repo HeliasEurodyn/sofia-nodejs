@@ -1,6 +1,15 @@
 const IncomingRequestsListModel = require('../../models/list/IncomingRequestsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => IncomingRequestsListModel.getList(data)
-};
+      return IncomingRequestsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

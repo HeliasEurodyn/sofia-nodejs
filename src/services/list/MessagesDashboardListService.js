@@ -1,6 +1,15 @@
 const MessagesDashboardListModel = require('../../models/list/MessagesDashboardListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MessagesDashboardListModel.getList(data)
-};
+      return MessagesDashboardListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

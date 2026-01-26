@@ -1,8 +1,37 @@
 const TransuctionsPivotListModel = require('../../models/list/TransuctionsPivotListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => TransuctionsPivotListModel.getList(data),
-   getGfProviderList: (data) => TransuctionsPivotListModel.getGfProviderList(data),
-   getGfOfferingTitleList: (data) => TransuctionsPivotListModel.getGfOfferingTitleList(data)
-};
+      return TransuctionsPivotListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getGfProviderList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return TransuctionsPivotListModel.getGfProviderList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getGfOfferingTitleList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return TransuctionsPivotListModel.getGfOfferingTitleList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getGfProviderList,
+      getGfOfferingTitleList
+   };

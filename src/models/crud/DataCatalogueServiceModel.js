@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -21,7 +21,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -44,7 +44,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -66,7 +66,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -74,13 +74,12 @@ module.exports = {
 
          /* SELECTION QUERY - data_catalog_service - */
 
-         const data_catalog_serviceFilters = {
-            data_catalog_service_obj_id: id
-         };
-         const [data_catalog_service_results] = await conn.query(
+         const data_catalog_serviceFilters = [id
+         ];
+         const [data_catalog_service_results] = await conn.execute(
          `SELECT id, short_order, code, name, short_description, data_catalog_category_id
           FROM data_catalog_service
-         WHERE data_catalog_service.id = :data_catalog_service_obj_id;`, data_catalog_serviceFilters );
+         WHERE data_catalog_service.id = ? `, data_catalog_serviceFilters );
 
          let data_catalog_service = {};
          data.data_catalog_service_obj = {};
@@ -88,17 +87,18 @@ module.exports = {
          {
             data_catalog_service = data_catalog_service_results[0];
             data.data_catalog_service_obj = data_catalog_service;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_category - */
 
-         const data_catalog_categoryFilters = {
-            data_catalog_category_obj_id: data_catalog_service?.data_catalog_category_id
-         };
-         const [data_catalog_category_results] = await conn.query(
+         const data_catalog_categoryFilters = [data_catalog_service?.data_catalog_category_id
+         ];
+         const [data_catalog_category_results] = await conn.execute(
          `SELECT id, short_order, code, name
           FROM data_catalog_category
-         WHERE data_catalog_category.id = :data_catalog_category_obj_id;`, data_catalog_categoryFilters );
+         WHERE data_catalog_category.id = ? `, data_catalog_categoryFilters );
 
          let data_catalog_category = {};
          data.data_catalog_service_obj.data_catalog_category_obj = {};
@@ -106,6 +106,8 @@ module.exports = {
          {
             data_catalog_category = data_catalog_category_results[0];
             data.data_catalog_service_obj.data_catalog_category_obj = data_catalog_category;
+         } else {
+            return data;
          }
 
          return data;
@@ -117,7 +119,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -125,14 +127,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const data_catalog_serviceFilters = {
-            data_catalog_service_obj_id: id
-         };
+         const data_catalog_serviceFilters = [id
+         ];
 
-         const [data_catalog_service_results] = await conn.query(
+         const [data_catalog_service_results] = await conn.execute(
          `SELECT id, data_catalog_category_id
           FROM data_catalog_service
-         WHERE data_catalog_service.id = :data_catalog_service_obj_id;`, data_catalog_serviceFilters );
+         WHERE data_catalog_service.id = ? `, data_catalog_serviceFilters );
 
          let data_catalog_service = {};
          data.data_catalog_service_obj = {};
@@ -146,7 +147,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const data_catalog_service_obj = data.data_catalog_service_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM data_catalog_service WHERE id = :id`, data_catalog_service_obj );
 
          await conn.commit();

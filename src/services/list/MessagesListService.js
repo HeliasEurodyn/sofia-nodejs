@@ -1,6 +1,15 @@
 const MessagesListModel = require('../../models/list/MessagesListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MessagesListModel.getList(data)
-};
+      return MessagesListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

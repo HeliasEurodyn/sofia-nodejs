@@ -4,7 +4,13 @@ const OnenetRolesListService = require('../../services/list/OnenetRolesListServi
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await OnenetRolesListService.getList(req.body);
+      const results = await OnenetRolesListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

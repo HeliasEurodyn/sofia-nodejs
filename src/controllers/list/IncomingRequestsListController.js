@@ -4,7 +4,13 @@ const IncomingRequestsListService = require('../../services/list/IncomingRequest
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await IncomingRequestsListService.getList(req.body);
+      const results = await IncomingRequestsListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

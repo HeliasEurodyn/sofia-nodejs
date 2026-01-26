@@ -4,18 +4,18 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      business_object_id: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      category_code: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'code',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      category_name: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      service_code: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'code',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      service_name: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      code: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'code',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      name: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      category_id: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      service_id: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      of_id: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'id',  section: 'orderby',  type: 'varchar',  primary: true,  autoIncrement: false },
-      category_grouping: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      service_grouping: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false }
+      business_object_id: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      category_code: { virtual: false, db_table: 'data_catalog_category', db_field: 'code', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      category_name: { virtual: false, db_table: 'data_catalog_category', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      service_code: { virtual: false, db_table: 'data_catalog_service', db_field: 'code', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      service_name: { virtual: false, db_table: 'data_catalog_service', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      code: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'code', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      name: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      category_id: { virtual: false, db_table: 'data_catalog_category', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      service_id: { virtual: false, db_table: 'data_catalog_service', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      of_id: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'id', section: 'orderby', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      category_grouping: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      service_grouping: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' }
    },
 
    fromSql:
@@ -24,12 +24,13 @@ module.exports = {
          LEFT OUTER JOIN data_catalog_service data_catalog_service ON data_catalog_service.id = data_catalog_business_object.data_catalog_service_id
          LEFT OUTER JOIN data_catalog_category data_catalog_category ON data_catalog_category.id = data_catalog_service.data_catalog_category_id`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
@@ -43,7 +44,7 @@ module.exports = {
             data_catalog_category.id as category_id, 
             data_catalog_service.id as service_id
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 
@@ -54,7 +55,7 @@ module.exports = {
       }
    },
 
-   getCategoryGroupingList: async (filters) => {
+   getCategoryGroupingList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -80,7 +81,7 @@ module.exports = {
       }
    },
 
-   getServiceGroupingList: async (filters) => {
+   getServiceGroupingList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {

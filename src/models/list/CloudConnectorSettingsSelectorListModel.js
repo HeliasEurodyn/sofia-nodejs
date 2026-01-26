@@ -4,21 +4,22 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      cf_id: { virtual: false,  db_table: 'cloud_connector_settings',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      cf_name: { virtual: false,  db_table: 'cloud_connector_settings',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_handler_url: { virtual: false,  db_table: 'cloud_connector_settings',  db_field: 'handler_url',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false }
+      cf_id: { virtual: false, db_table: 'cloud_connector_settings', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      cf_name: { virtual: false, db_table: 'cloud_connector_settings', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_handler_url: { virtual: false, db_table: 'cloud_connector_settings', db_field: 'handler_url', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' }
    },
 
    fromSql:
       `FROM
          cloud_connector_settings cloud_connector_settings`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
@@ -26,7 +27,7 @@ module.exports = {
             cloud_connector_settings.name as cf_name, 
             cloud_connector_settings.handler_url as cf_handler_url
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 

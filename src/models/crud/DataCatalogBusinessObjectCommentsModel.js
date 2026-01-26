@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -52,7 +52,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -75,7 +75,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -97,7 +97,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -105,13 +105,12 @@ module.exports = {
 
          /* SELECTION QUERY - data_catalog_business_object_comments - */
 
-         const data_catalog_business_object_commentsFilters = {
-            data_catalog_business_object_comments_obj_id: id
-         };
-         const [data_catalog_business_object_comments_results] = await conn.query(
+         const data_catalog_business_object_commentsFilters = [id
+         ];
+         const [data_catalog_business_object_comments_results] = await conn.execute(
          `SELECT status, id, created_by, created_on, title, description, data_catalog_business_object_id
           FROM data_catalog_business_object_comments
-         WHERE data_catalog_business_object_comments.id = :data_catalog_business_object_comments_obj_id;`, data_catalog_business_object_commentsFilters );
+         WHERE data_catalog_business_object_comments.id = ? `, data_catalog_business_object_commentsFilters );
 
          let data_catalog_business_object_comments = {};
          data.data_catalog_business_object_comments_obj = {};
@@ -119,17 +118,18 @@ module.exports = {
          {
             data_catalog_business_object_comments = data_catalog_business_object_comments_results[0];
             data.data_catalog_business_object_comments_obj = data_catalog_business_object_comments;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_business_object - */
 
-         const data_catalog_business_objectFilters = {
-            data_catalog_business_object_obj_id: data_catalog_business_object_comments?.data_catalog_business_object_id
-         };
-         const [data_catalog_business_object_results] = await conn.query(
+         const data_catalog_business_objectFilters = [data_catalog_business_object_comments?.data_catalog_business_object_id
+         ];
+         const [data_catalog_business_object_results] = await conn.execute(
          `SELECT wizard_id, type, status, type_of_communication, id, short_order, code, name, data_catalog_service_id, file_schema, file_schema_sample, profile_description, profile_selector, file_schema_filename, file_schema_sample_filename
           FROM data_catalog_business_object
-         WHERE data_catalog_business_object.id = :data_catalog_business_object_obj_id;`, data_catalog_business_objectFilters );
+         WHERE data_catalog_business_object.id = ? `, data_catalog_business_objectFilters );
 
          let data_catalog_business_object = {};
          data.data_catalog_business_object_comments_obj.data_catalog_business_object_obj = {};
@@ -137,17 +137,18 @@ module.exports = {
          {
             data_catalog_business_object = data_catalog_business_object_results[0];
             data.data_catalog_business_object_comments_obj.data_catalog_business_object_obj = data_catalog_business_object;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_service - */
 
-         const data_catalog_serviceFilters = {
-            data_catalog_service_obj_id: data_catalog_business_object?.data_catalog_service_id
-         };
-         const [data_catalog_service_results] = await conn.query(
+         const data_catalog_serviceFilters = [data_catalog_business_object?.data_catalog_service_id
+         ];
+         const [data_catalog_service_results] = await conn.execute(
          `SELECT id, short_order, code, name, short_description, data_catalog_category_id
           FROM data_catalog_service
-         WHERE data_catalog_service.id = :data_catalog_service_obj_id;`, data_catalog_serviceFilters );
+         WHERE data_catalog_service.id = ? `, data_catalog_serviceFilters );
 
          let data_catalog_service = {};
          data.data_catalog_business_object_comments_obj.data_catalog_business_object_obj.data_catalog_service_obj = {};
@@ -155,17 +156,18 @@ module.exports = {
          {
             data_catalog_service = data_catalog_service_results[0];
             data.data_catalog_business_object_comments_obj.data_catalog_business_object_obj.data_catalog_service_obj = data_catalog_service;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_category - */
 
-         const data_catalog_categoryFilters = {
-            data_catalog_category_obj_id: data_catalog_service?.data_catalog_category_id
-         };
-         const [data_catalog_category_results] = await conn.query(
+         const data_catalog_categoryFilters = [data_catalog_service?.data_catalog_category_id
+         ];
+         const [data_catalog_category_results] = await conn.execute(
          `SELECT id, short_order, code, name
           FROM data_catalog_category
-         WHERE data_catalog_category.id = :data_catalog_category_obj_id;`, data_catalog_categoryFilters );
+         WHERE data_catalog_category.id = ? `, data_catalog_categoryFilters );
 
          let data_catalog_category = {};
          data.data_catalog_business_object_comments_obj.data_catalog_business_object_obj.data_catalog_service_obj.data_catalog_category_obj = {};
@@ -173,17 +175,18 @@ module.exports = {
          {
             data_catalog_category = data_catalog_category_results[0];
             data.data_catalog_business_object_comments_obj.data_catalog_business_object_obj.data_catalog_service_obj.data_catalog_category_obj = data_catalog_category;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - user - */
 
-         const userFilters = {
-            user_obj_id: data_catalog_business_object_comments?.created_by
-         };
-         const [user_results] = await conn.query(
+         const userFilters = [data_catalog_business_object_comments?.created_by
+         ];
+         const [user_results] = await conn.execute(
          `SELECT username, id, email
-          FROM  ( SELECT `id`, `username`, `email`  FROM `user` ) user
-         WHERE user.id = :user_obj_id;`, userFilters );
+          FROM  ( SELECT id, username, email  FROM user ) user
+         WHERE user.id = ? `, userFilters );
 
          let user = {};
          data.data_catalog_business_object_comments_obj.user_obj = {};
@@ -191,6 +194,8 @@ module.exports = {
          {
             user = user_results[0];
             data.data_catalog_business_object_comments_obj.user_obj = user;
+         } else {
+            return data;
          }
 
          return data;
@@ -202,7 +207,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -210,14 +215,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const data_catalog_business_object_commentsFilters = {
-            data_catalog_business_object_comments_obj_id: id
-         };
+         const data_catalog_business_object_commentsFilters = [id
+         ];
 
-         const [data_catalog_business_object_comments_results] = await conn.query(
+         const [data_catalog_business_object_comments_results] = await conn.execute(
          `SELECT id, created_by, data_catalog_business_object_id
           FROM data_catalog_business_object_comments
-         WHERE data_catalog_business_object_comments.id = :data_catalog_business_object_comments_obj_id;`, data_catalog_business_object_commentsFilters );
+         WHERE data_catalog_business_object_comments.id = ? `, data_catalog_business_object_commentsFilters );
 
          let data_catalog_business_object_comments = {};
          data.data_catalog_business_object_comments_obj = {};
@@ -231,7 +235,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const data_catalog_business_object_comments_obj = data.data_catalog_business_object_comments_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM data_catalog_business_object_comments WHERE id = :id`, data_catalog_business_object_comments_obj );
 
          await conn.commit();

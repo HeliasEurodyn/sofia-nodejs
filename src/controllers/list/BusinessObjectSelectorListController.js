@@ -4,17 +4,35 @@ const BusinessObjectSelectorListService = require('../../services/list/BusinessO
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await BusinessObjectSelectorListService.getList(req.body);
+      const results = await BusinessObjectSelectorListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf2List: asyncHandler(async (req, res) => {
-      const results = await BusinessObjectSelectorListService.getSqlgf2List(req.body);
+      const results = await BusinessObjectSelectorListService.getSqlgf2List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf3List: asyncHandler(async (req, res) => {
-      const results = await BusinessObjectSelectorListService.getSqlgf3List(req.body);
+      const results = await BusinessObjectSelectorListService.getSqlgf3List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

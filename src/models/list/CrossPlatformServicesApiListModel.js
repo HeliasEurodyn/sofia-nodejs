@@ -4,21 +4,21 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      cross_platform_service_id: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      category: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'code',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      category_name: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      service: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'code',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      service_description: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'short_description',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      service_name: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      business_object_code: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'code',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      business_object_name: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      profile_selector: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'profile_selector',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      status: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'status',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      of_id: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'id',  section: 'orderby',  type: 'varchar',  primary: true,  autoIncrement: false },
-      of_status: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'status',  section: 'orderby',  type: 'varchar',  primary: false,  autoIncrement: false },
-      ft_status: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'status',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      category_group: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      service_group: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false }
+      cross_platform_service_id: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      category: { virtual: false, db_table: 'data_catalog_category', db_field: 'code', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      category_name: { virtual: false, db_table: 'data_catalog_category', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      service: { virtual: false, db_table: 'data_catalog_service', db_field: 'code', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      service_description: { virtual: false, db_table: 'data_catalog_service', db_field: 'short_description', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      service_name: { virtual: false, db_table: 'data_catalog_service', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      business_object_code: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'code', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      business_object_name: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      profile_selector: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'profile_selector', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      status: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'status', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      of_id: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'id', section: 'orderby', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      of_status: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'status', section: 'orderby', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      ft_status: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'status', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '!=' },
+      category_group: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      service_group: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' }
    },
 
    fromSql:
@@ -27,12 +27,13 @@ module.exports = {
          LEFT OUTER JOIN data_catalog_service data_catalog_service ON data_catalog_service.id = data_catalog_business_object.data_catalog_service_id
          LEFT OUTER JOIN data_catalog_category data_catalog_category ON data_catalog_category.id = data_catalog_service.data_catalog_category_id`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
@@ -47,7 +48,7 @@ module.exports = {
             data_catalog_business_object.profile_selector as profile_selector, 
             data_catalog_business_object.status as status
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 
@@ -58,7 +59,7 @@ module.exports = {
       }
    },
 
-   getCategoryGroupList: async (filters) => {
+   getCategoryGroupList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -84,7 +85,7 @@ module.exports = {
       }
    },
 
-   getServiceGroupList: async (filters) => {
+   getServiceGroupList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {

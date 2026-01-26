@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const DataOfferingsSysadminListController = require('../../controllers/list/DataOfferingsSysadminListController');
+const DataOfferingsSysAdminListController = require('../../controllers/list/DataOfferingsSysAdminListController');
 
-router.get('/', DataOfferingsSysadminListController.getList);
-router.get('/sqlgf_1/', DataOfferingsSysadminListController.getSqlgf1List);
-router.get('/sqlgf_2/', DataOfferingsSysadminListController.getSqlgf2List);
-router.get('/sqlgf_3/', DataOfferingsSysadminListController.getSqlgf3List);
-router.get('/sqlgf_4/', DataOfferingsSysadminListController.getSqlgf4List);
+router.post('/', DataOfferingsSysAdminListController.getList);
+router.get('/sqlgf_1/', DataOfferingsSysAdminListController.getSqlgf1List);
+router.get('/sqlgf_2/', DataOfferingsSysAdminListController.getSqlgf2List);
+router.get('/sqlgf_3/', DataOfferingsSysAdminListController.getSqlgf3List);
+router.get('/sqlgf_4/', DataOfferingsSysAdminListController.getSqlgf4List);
 
 module.exports  = router;

@@ -4,7 +4,13 @@ const ProcessTagsListService = require('../../services/list/ProcessTagsListServi
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await ProcessTagsListService.getList(req.body);
+      const results = await ProcessTagsListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

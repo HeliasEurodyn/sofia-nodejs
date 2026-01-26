@@ -4,26 +4,26 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      cf_id: { virtual: false,  db_table: 'data_send',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      cf_id_1: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      sqlf_5: { virtual: true,  db_table: '',  db_field: '',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_title_1: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'title',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlf_7: { virtual: true,  db_table: '',  db_field: '',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_created_on: { virtual: false,  db_table: 'data_send',  db_field: 'created_on',  section: 'column',  type: 'datetime',  primary: false,  autoIncrement: false },
-      cf_title: { virtual: false,  db_table: 'data_send',  db_field: 'title',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_description: { virtual: false,  db_table: 'data_send',  db_field: 'description',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      total_views: { virtual: true,  db_table: '',  db_field: '',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      of_created_on: { virtual: false,  db_table: 'data_send',  db_field: 'created_on',  section: 'orderby',  type: 'datetime',  primary: false,  autoIncrement: false },
-      ft_status: { virtual: false,  db_table: 'data_catalog_data_requests',  db_field: 'status',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      ft_owner_id: { virtual: false,  db_table: 'data_catalog_data_requests',  db_field: 'owner_id',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      ft_id: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id_1: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id_2: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id_3: { virtual: false,  db_table: 'user',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_status_1: { virtual: false,  db_table: 'data_send',  db_field: 'status',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_1: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_2: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_3: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false }
+      cf_id: { virtual: false, db_table: 'data_send', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      cf_id_1: { virtual: false, db_table: 'data_catalog_category', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      sqlf_5: { virtual: true, db_table: '', db_field: '', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      cf_title_1: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'title', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      sqlf_7: { virtual: true, db_table: '', db_field: '', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_created_on: { virtual: false, db_table: 'data_send', db_field: 'created_on', section: 'column', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '=' },
+      cf_title: { virtual: false, db_table: 'data_send', db_field: 'title', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_description: { virtual: false, db_table: 'data_send', db_field: 'description', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      total_views: { virtual: true, db_table: '', db_field: '', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      of_created_on: { virtual: false, db_table: 'data_send', db_field: 'created_on', section: 'orderby', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '=' },
+      ft_status: { virtual: false, db_table: 'data_catalog_data_requests', db_field: 'status', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      ft_owner_id: { virtual: false, db_table: 'data_catalog_data_requests', db_field: 'owner_id', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      ft_id: { virtual: false, db_table: 'data_catalog_category', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id_1: { virtual: false, db_table: 'data_catalog_service', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id_2: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id_3: { virtual: false, db_table: 'user', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_status_1: { virtual: false, db_table: 'data_send', db_field: 'status', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_1: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_2: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_3: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' }
    },
 
    fromSql:
@@ -36,12 +36,13 @@ module.exports = {
          LEFT OUTER JOIN data_catalog_data_requests data_catalog_data_requests ON data_catalog_data_requests.data_catalog_data_offering_id = data_catalog_data_offerings.id AND data_catalog_data_requests.owner_id = :userid
          LEFT OUTER JOIN user user_offering ON user_offering.id = data_catalog_data_offerings.created_by`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
@@ -55,7 +56,7 @@ module.exports = {
             (SELECT CONCAT(company_offering.name,' <i class="fa fa-caret-right"></i> ', user_offering.username)) as sqlf_7, 
             (SELECT COUNT(dv.id) AS total FROM data_views dv WHERE dv.user_id = data_catalog_data_requests.created_by AND dv.data_id = data_send.id) as total_views
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 
@@ -66,7 +67,7 @@ module.exports = {
       }
    },
 
-   getSqlgf1List: async (filters) => {
+   getSqlgf1List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -92,7 +93,7 @@ module.exports = {
       }
    },
 
-   getSqlgf2List: async (filters) => {
+   getSqlgf2List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -118,7 +119,7 @@ module.exports = {
       }
    },
 
-   getSqlgf3List: async (filters) => {
+   getSqlgf3List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {

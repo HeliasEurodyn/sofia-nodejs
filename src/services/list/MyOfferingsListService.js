@@ -1,6 +1,15 @@
 const MyOfferingsListModel = require('../../models/list/MyOfferingsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MyOfferingsListModel.getList(data)
-};
+      return MyOfferingsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

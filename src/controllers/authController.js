@@ -22,11 +22,11 @@ const login = async (req, res, next) => {
     const userAgent = req.get('user-agent') || null;
     const ipAddress = req.ip;
 
-    const { accessToken, refreshToken, sessionId, sessionExpiresOn } =
+    const { accessToken, refreshToken, sessionId, sessionExpiresOn, user } =
       await authService.login({ username, password, userAgent, ipAddress });
 
     setSessionCookie(res, sessionId, sessionExpiresOn);
-    res.json({ accessToken, refreshToken });
+    res.json({ accessToken, refreshToken, sessionExpiresOn, user });
   } catch (err) {
     next(err);
   }

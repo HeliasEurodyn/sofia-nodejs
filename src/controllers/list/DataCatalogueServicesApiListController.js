@@ -4,12 +4,24 @@ const DataCatalogueServicesApiListService = require('../../services/list/DataCat
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await DataCatalogueServicesApiListService.getList(req.body);
+      const results = await DataCatalogueServicesApiListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getCategoryGroupList: asyncHandler(async (req, res) => {
-      const results = await DataCatalogueServicesApiListService.getCategoryGroupList(req.body);
+      const results = await DataCatalogueServicesApiListService.getCategoryGroupList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -11,7 +11,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -34,7 +34,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -56,7 +56,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -64,13 +64,12 @@ module.exports = {
 
          /* SELECTION QUERY - vocabulary_keywords - */
 
-         const vocabulary_keywordsFilters = {
-            vocabulary_keywords_obj_id: id
-         };
-         const [vocabulary_keywords_results] = await conn.query(
+         const vocabulary_keywordsFilters = [id
+         ];
+         const [vocabulary_keywords_results] = await conn.execute(
          `SELECT id, title
           FROM vocabulary_keywords
-         WHERE vocabulary_keywords.id = :vocabulary_keywords_obj_id;`, vocabulary_keywordsFilters );
+         WHERE vocabulary_keywords.id = ? `, vocabulary_keywordsFilters );
 
          let vocabulary_keywords = {};
          data.vocabulary_keywords_obj = {};
@@ -78,6 +77,8 @@ module.exports = {
          {
             vocabulary_keywords = vocabulary_keywords_results[0];
             data.vocabulary_keywords_obj = vocabulary_keywords;
+         } else {
+            return data;
          }
 
          return data;
@@ -89,7 +90,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -97,14 +98,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const vocabulary_keywordsFilters = {
-            vocabulary_keywords_obj_id: id
-         };
+         const vocabulary_keywordsFilters = [id
+         ];
 
-         const [vocabulary_keywords_results] = await conn.query(
+         const [vocabulary_keywords_results] = await conn.execute(
          `SELECT id
           FROM vocabulary_keywords
-         WHERE vocabulary_keywords.id = :vocabulary_keywords_obj_id;`, vocabulary_keywordsFilters );
+         WHERE vocabulary_keywords.id = ? `, vocabulary_keywordsFilters );
 
          let vocabulary_keywords = {};
          data.vocabulary_keywords_obj = {};
@@ -118,7 +118,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const vocabulary_keywords_obj = data.vocabulary_keywords_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM vocabulary_keywords WHERE id = :id`, vocabulary_keywords_obj );
 
          await conn.commit();

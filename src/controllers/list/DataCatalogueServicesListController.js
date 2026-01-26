@@ -4,12 +4,24 @@ const DataCatalogueServicesListService = require('../../services/list/DataCatalo
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await DataCatalogueServicesListService.getList(req.body);
+      const results = await DataCatalogueServicesListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf1List: asyncHandler(async (req, res) => {
-      const results = await DataCatalogueServicesListService.getSqlgf1List(req.body);
+      const results = await DataCatalogueServicesListService.getSqlgf1List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

@@ -4,7 +4,13 @@ const SubscriptionsListService = require('../../services/list/SubscriptionsListS
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await SubscriptionsListService.getList(req.body);
+      const results = await SubscriptionsListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

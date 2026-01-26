@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -18,7 +18,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -41,7 +41,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -63,7 +63,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -71,13 +71,12 @@ module.exports = {
 
          /* SELECTION QUERY - cloud_connector_settings - */
 
-         const cloud_connector_settingsFilters = {
-            cloud_connector_settings_obj_id: id
-         };
-         const [cloud_connector_settings_results] = await conn.query(
+         const cloud_connector_settingsFilters = [id
+         ];
+         const [cloud_connector_settings_results] = await conn.execute(
          `SELECT created_on, handler_url, handler_public_url, connector_public_url, connector_management_url, connector_protocol_url, connector_control_url, id, name
           FROM cloud_connector_settings
-         WHERE cloud_connector_settings.id = :cloud_connector_settings_obj_id;`, cloud_connector_settingsFilters );
+         WHERE cloud_connector_settings.id = ? `, cloud_connector_settingsFilters );
 
          let cloud_connector_settings = {};
          data.cloud_connector_settings_obj = {};
@@ -85,6 +84,8 @@ module.exports = {
          {
             cloud_connector_settings = cloud_connector_settings_results[0];
             data.cloud_connector_settings_obj = cloud_connector_settings;
+         } else {
+            return data;
          }
 
          return data;
@@ -96,7 +97,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -104,14 +105,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const cloud_connector_settingsFilters = {
-            cloud_connector_settings_obj_id: id
-         };
+         const cloud_connector_settingsFilters = [id
+         ];
 
-         const [cloud_connector_settings_results] = await conn.query(
+         const [cloud_connector_settings_results] = await conn.execute(
          `SELECT id
           FROM cloud_connector_settings
-         WHERE cloud_connector_settings.id = :cloud_connector_settings_obj_id;`, cloud_connector_settingsFilters );
+         WHERE cloud_connector_settings.id = ? `, cloud_connector_settingsFilters );
 
          let cloud_connector_settings = {};
          data.cloud_connector_settings_obj = {};
@@ -125,7 +125,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const cloud_connector_settings_obj = data.cloud_connector_settings_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM cloud_connector_settings WHERE id = :id`, cloud_connector_settings_obj );
 
          await conn.commit();

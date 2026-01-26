@@ -189,34 +189,58 @@ function buildDeleteNotInQuery(table, keyFields, dataArray) {
  * --------------------------------------------------------- */
 function buildWhereClause(listFields, filters = {}) {
   const conditions = [];
-  const params = {};
+  const params = [];
 
   for (const [filterKey, filterValue] of Object.entries(filters)) {
     const fieldConfig = listFields[filterKey];
-    if (!fieldConfig) continue; // αγνόησε άγνωστα φίλτρα
+    if (!fieldConfig) continue;
     if (!fieldConfig.db_table || !fieldConfig.db_field) continue;
     if (filterValue === undefined || filterValue === null || filterValue === '') continue;
 
-    const paramName = `f_${filterKey}`;
-    const value = convertValue(filterValue, fieldConfig.type);
+    const operator = (fieldConfig.filterOperator || '=').toLowerCase();
+    let value = convertValue(filterValue, fieldConfig.type);
 
-    // basic equality – μπορείς εύκολα να το επεκτείνεις
+    let sqlOperator = operator;
+    let sqlValue = value;
+
+    if (operator === 'like') {
+      sqlOperator = 'LIKE';
+      sqlValue = `%${value}%`;
+    }
+
     conditions.push(
-      `\`${fieldConfig.db_table}\`.\`${fieldConfig.db_field}\` = :${paramName}`
+      `\`${fieldConfig.db_table}\`.\`${fieldConfig.db_field}\` ${sqlOperator} ?`
     );
 
-    params[paramName] = value;
+    params.push(sqlValue);
   }
 
   if (!conditions.length) {
-    return { whereSql: '1=1', params: {} };
+    return { whereSql: '', params: [] };
   }
 
   return {
-    whereSql: conditions.join(' AND '),
+    whereSql: 'WHERE ' + conditions.join(' AND '),
     params
   };
 }
+
+function buildOrderByClause(listFields, filters = {}) {
+  const sortCode = filters['sel-sort-code'];
+  const sortOrder = filters['sel-sort-order'];
+
+  if (!sortCode || !sortOrder) return '';
+
+  const fieldConfig = listFields[sortCode];
+  if (!fieldConfig) return '';
+  if (!fieldConfig.db_table || !fieldConfig.db_field) return '';
+
+  const direction = sortOrder.toLowerCase();
+  if (direction !== 'asc' && direction !== 'desc') return '';
+
+  return `ORDER BY \`${fieldConfig.db_table}\`.\`${fieldConfig.db_field}\` ${direction.toUpperCase()}`;
+}
+
 
 /* ---------------------------------------------------------
  * ModelHelper main class
@@ -225,6 +249,10 @@ class ModelHelper {
 
   static buildWhere(listFields, filters) {
     return buildWhereClause(listFields, filters);
+  }
+
+  static buildOrderBy(listFields, filters) {
+    return buildOrderByClause(listFields, filters);
   }
 
   static async insert(conn, table, schema, data) {

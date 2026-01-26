@@ -1,6 +1,15 @@
 const CloudConnectorSettingsSelectorListModel = require('../../models/list/CloudConnectorSettingsSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => CloudConnectorSettingsSelectorListModel.getList(data)
-};
+      return CloudConnectorSettingsSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

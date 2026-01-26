@@ -1,6 +1,15 @@
 const OnenetRolesListModel = require('../../models/list/OnenetRolesListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => OnenetRolesListModel.getList(data)
-};
+      return OnenetRolesListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

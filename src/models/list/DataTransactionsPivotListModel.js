@@ -4,21 +4,21 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      cf_id: { virtual: false,  db_table: 'data_send',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      of_created_on: { virtual: false,  db_table: 'data_send',  db_field: 'created_on',  section: 'orderby',  type: 'datetime',  primary: false,  autoIncrement: false },
-      ft_id: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id_1: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id_2: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id_3: { virtual: false,  db_table: 'user',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_created_on: { virtual: false,  db_table: 'data_send',  db_field: 'created_on',  section: 'filter',  type: 'datetime',  primary: false,  autoIncrement: false },
-      ft_created_on_1: { virtual: false,  db_table: 'data_send',  db_field: 'created_on',  section: 'filter',  type: 'datetime',  primary: false,  autoIncrement: false },
-      sqlgf_1: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_2: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_3: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      gf_name: { virtual: false,  db_table: 'company',  db_field: 'name',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      gf_username: { virtual: false,  db_table: 'user',  db_field: 'username',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqltgf_1: { virtual: true,  db_table: '',  db_field: '',  section: 'topgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqltgf_2: { virtual: true,  db_table: '',  db_field: '',  section: 'topgroup',  type: 'varchar',  primary: false,  autoIncrement: false }
+      cf_id: { virtual: false, db_table: 'data_send', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      of_created_on: { virtual: false, db_table: 'data_send', db_field: 'created_on', section: 'orderby', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '=' },
+      ft_id: { virtual: false, db_table: 'data_catalog_category', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id_1: { virtual: false, db_table: 'data_catalog_service', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id_2: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id_3: { virtual: false, db_table: 'user', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_created_on: { virtual: false, db_table: 'data_send', db_field: 'created_on', section: 'filter', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '>=' },
+      ft_created_on_1: { virtual: false, db_table: 'data_send', db_field: 'created_on', section: 'filter', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '<=' },
+      sqlgf_1: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_2: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_3: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      gf_name: { virtual: false, db_table: 'company', db_field: 'name', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      gf_username: { virtual: false, db_table: 'user', db_field: 'username', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqltgf_1: { virtual: true, db_table: '', db_field: '', section: 'topgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqltgf_2: { virtual: true, db_table: '', db_field: '', section: 'topgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' }
    },
 
    fromSql:
@@ -32,18 +32,19 @@ module.exports = {
          LEFT OUTER JOIN user user_offering ON user_offering.id = data_catalog_data_offerings.created_by
          LEFT OUTER JOIN company company_offering ON company_offering.id = user_offering.company_id`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
             data_send.id as cf_id
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 
@@ -54,7 +55,7 @@ module.exports = {
       }
    },
 
-   getSqlgf1List: async (filters) => {
+   getSqlgf1List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -80,7 +81,7 @@ module.exports = {
       }
    },
 
-   getSqlgf2List: async (filters) => {
+   getSqlgf2List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -106,7 +107,7 @@ module.exports = {
       }
    },
 
-   getSqlgf3List: async (filters) => {
+   getSqlgf3List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -132,7 +133,7 @@ module.exports = {
       }
    },
 
-   getGfNameList: async (filters) => {
+   getGfNameList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -158,7 +159,7 @@ module.exports = {
       }
    },
 
-   getGfUsernameList: async (filters) => {
+   getGfUsernameList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {

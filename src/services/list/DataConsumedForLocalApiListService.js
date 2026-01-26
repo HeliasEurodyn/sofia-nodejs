@@ -1,9 +1,48 @@
 const DataConsumedForLocalApiListModel = require('../../models/list/DataConsumedForLocalApiListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => DataConsumedForLocalApiListModel.getList(data),
-   getCategoryGroupingList: (data) => DataConsumedForLocalApiListModel.getCategoryGroupingList(data),
-   getServiceGroupingList: (data) => DataConsumedForLocalApiListModel.getServiceGroupingList(data),
-   getBusinessObjectGroupingList: (data) => DataConsumedForLocalApiListModel.getBusinessObjectGroupingList(data)
-};
+      return DataConsumedForLocalApiListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCategoryGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataConsumedForLocalApiListModel.getCategoryGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getServiceGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataConsumedForLocalApiListModel.getServiceGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getBusinessObjectGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataConsumedForLocalApiListModel.getBusinessObjectGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCategoryGroupingList,
+      getServiceGroupingList,
+      getBusinessObjectGroupingList
+   };

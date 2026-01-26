@@ -1,8 +1,37 @@
 const CrossPlatformServicesForServiceEditorAndAdminListModel = require('../../models/list/CrossPlatformServicesForServiceEditorAndAdminListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => CrossPlatformServicesForServiceEditorAndAdminListModel.getList(data),
-   getSqlgf2List: (data) => CrossPlatformServicesForServiceEditorAndAdminListModel.getSqlgf2List(data),
-   getSqlgf3List: (data) => CrossPlatformServicesForServiceEditorAndAdminListModel.getSqlgf3List(data)
-};
+      return CrossPlatformServicesForServiceEditorAndAdminListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getSqlgf2List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return CrossPlatformServicesForServiceEditorAndAdminListModel.getSqlgf2List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf3List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return CrossPlatformServicesForServiceEditorAndAdminListModel.getSqlgf3List({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getSqlgf2List,
+      getSqlgf3List
+   };

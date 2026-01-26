@@ -4,27 +4,57 @@ const MyOfferedServicesApiListService = require('../../services/list/MyOfferedSe
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesApiListService.getList(req.body);
+      const results = await MyOfferedServicesApiListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getCategoryGroupList: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesApiListService.getCategoryGroupList(req.body);
+      const results = await MyOfferedServicesApiListService.getCategoryGroupList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getServiceGroupList: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesApiListService.getServiceGroupList(req.body);
+      const results = await MyOfferedServicesApiListService.getServiceGroupList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getBusinessObjectGroupList: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesApiListService.getBusinessObjectGroupList(req.body);
+      const results = await MyOfferedServicesApiListService.getBusinessObjectGroupList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getUsersGroupList: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesApiListService.getUsersGroupList(req.body);
+      const results = await MyOfferedServicesApiListService.getUsersGroupList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

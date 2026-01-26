@@ -4,22 +4,46 @@ const ProvideDataListService = require('../../services/list/ProvideDataListServi
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await ProvideDataListService.getList(req.body);
+      const results = await ProvideDataListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getCategoryGroupingList: asyncHandler(async (req, res) => {
-      const results = await ProvideDataListService.getCategoryGroupingList(req.body);
+      const results = await ProvideDataListService.getCategoryGroupingList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getServiceGroupingList: asyncHandler(async (req, res) => {
-      const results = await ProvideDataListService.getServiceGroupingList(req.body);
+      const results = await ProvideDataListService.getServiceGroupingList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getBusinessObjectGroupingList: asyncHandler(async (req, res) => {
-      const results = await ProvideDataListService.getBusinessObjectGroupingList(req.body);
+      const results = await ProvideDataListService.getBusinessObjectGroupingList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -16,7 +16,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -39,7 +39,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -61,7 +61,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -69,13 +69,12 @@ module.exports = {
 
          /* SELECTION QUERY - onenet_role - */
 
-         const onenet_roleFilters = {
-            onenet_role_obj_id: id
-         };
-         const [onenet_role_results] = await conn.query(
+         const onenet_roleFilters = [id
+         ];
+         const [onenet_role_results] = await conn.execute(
          `SELECT id, created_by, created_on, modified_by, modified_on, name, code
           FROM onenet_role
-         WHERE onenet_role.id = :onenet_role_obj_id;`, onenet_roleFilters );
+         WHERE onenet_role.id = ? `, onenet_roleFilters );
 
          let onenet_role = {};
          data.onenet_role_obj = {};
@@ -83,6 +82,8 @@ module.exports = {
          {
             onenet_role = onenet_role_results[0];
             data.onenet_role_obj = onenet_role;
+         } else {
+            return data;
          }
 
          return data;
@@ -94,7 +95,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -102,14 +103,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const onenet_roleFilters = {
-            onenet_role_obj_id: id
-         };
+         const onenet_roleFilters = [id
+         ];
 
-         const [onenet_role_results] = await conn.query(
+         const [onenet_role_results] = await conn.execute(
          `SELECT id
           FROM onenet_role
-         WHERE onenet_role.id = :onenet_role_obj_id;`, onenet_roleFilters );
+         WHERE onenet_role.id = ? `, onenet_roleFilters );
 
          let onenet_role = {};
          data.onenet_role_obj = {};
@@ -123,7 +123,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const onenet_role_obj = data.onenet_role_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM onenet_role WHERE id = :id`, onenet_role_obj );
          onenet_role_obj.id = onenet_role_result.insertId;
 

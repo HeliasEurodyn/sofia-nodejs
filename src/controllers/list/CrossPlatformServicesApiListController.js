@@ -4,17 +4,35 @@ const CrossPlatformServicesApiListService = require('../../services/list/CrossPl
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await CrossPlatformServicesApiListService.getList(req.body);
+      const results = await CrossPlatformServicesApiListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getCategoryGroupList: asyncHandler(async (req, res) => {
-      const results = await CrossPlatformServicesApiListService.getCategoryGroupList(req.body);
+      const results = await CrossPlatformServicesApiListService.getCategoryGroupList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getServiceGroupList: asyncHandler(async (req, res) => {
-      const results = await CrossPlatformServicesApiListService.getServiceGroupList(req.body);
+      const results = await CrossPlatformServicesApiListService.getServiceGroupList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

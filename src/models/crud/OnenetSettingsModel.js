@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -21,7 +21,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -44,7 +44,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -66,7 +66,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -74,13 +74,12 @@ module.exports = {
 
          /* SELECTION QUERY - onenet_settings - */
 
-         const onenet_settingsFilters = {
-            onenet_settings_obj_id: id
-         };
-         const [onenet_settings_results] = await conn.query(
+         const onenet_settingsFilters = [id
+         ];
+         const [onenet_settings_results] = await conn.execute(
          `SELECT company_name, company_address, onenet_registry, phone_number, company_id, id, created_by, created_on, modified_by, modified_on, orion_consumer_ip, orion_provider_ip
           FROM onenet_settings
-         WHERE onenet_settings.id = :onenet_settings_obj_id;`, onenet_settingsFilters );
+         WHERE onenet_settings.id = ? `, onenet_settingsFilters );
 
          let onenet_settings = {};
          data.onenet_settings_obj = {};
@@ -88,6 +87,8 @@ module.exports = {
          {
             onenet_settings = onenet_settings_results[0];
             data.onenet_settings_obj = onenet_settings;
+         } else {
+            return data;
          }
 
          return data;
@@ -99,7 +100,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -107,14 +108,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const onenet_settingsFilters = {
-            onenet_settings_obj_id: id
-         };
+         const onenet_settingsFilters = [id
+         ];
 
-         const [onenet_settings_results] = await conn.query(
+         const [onenet_settings_results] = await conn.execute(
          `SELECT id
           FROM onenet_settings
-         WHERE onenet_settings.id = :onenet_settings_obj_id;`, onenet_settingsFilters );
+         WHERE onenet_settings.id = ? `, onenet_settingsFilters );
 
          let onenet_settings = {};
          data.onenet_settings_obj = {};
@@ -128,7 +128,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const onenet_settings_obj = data.onenet_settings_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM onenet_settings WHERE id = :id`, onenet_settings_obj );
          onenet_settings_obj.id = onenet_settings_result.insertId;
 

@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -18,7 +18,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -41,7 +41,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -63,7 +63,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -71,13 +71,12 @@ module.exports = {
 
          /* SELECTION QUERY - company - */
 
-         const companyFilters = {
-            company_obj_id: id
-         };
-         const [company_results] = await conn.query(
+         const companyFilters = [id
+         ];
+         const [company_results] = await conn.execute(
          `SELECT description, id, created_by, created_on, modified_by, modified_on, name, address, phone
           FROM company
-         WHERE company.id = :company_obj_id;`, companyFilters );
+         WHERE company.id = ? `, companyFilters );
 
          let company = {};
          data.company_obj = {};
@@ -85,6 +84,8 @@ module.exports = {
          {
             company = company_results[0];
             data.company_obj = company;
+         } else {
+            return data;
          }
 
          return data;
@@ -96,7 +97,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -104,14 +105,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const companyFilters = {
-            company_obj_id: id
-         };
+         const companyFilters = [id
+         ];
 
-         const [company_results] = await conn.query(
+         const [company_results] = await conn.execute(
          `SELECT id
           FROM company
-         WHERE company.id = :company_obj_id;`, companyFilters );
+         WHERE company.id = ? `, companyFilters );
 
          let company = {};
          data.company_obj = {};
@@ -125,7 +125,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const company_obj = data.company_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM company WHERE id = :id`, company_obj );
 
          await conn.commit();

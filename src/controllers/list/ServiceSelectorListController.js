@@ -4,7 +4,13 @@ const ServiceSelectorListService = require('../../services/list/ServiceSelectorL
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await ServiceSelectorListService.getList(req.body);
+      const results = await ServiceSelectorListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

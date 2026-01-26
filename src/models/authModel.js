@@ -5,12 +5,24 @@ const findUserByUsername = async (username) => {
   const conn = await pool.getConnection();
   try {
     const [rows] = await conn.query(
-      `SELECT id, username, password, enabled
-       FROM user
-       WHERE username = :username
-       LIMIT 1`,
+      `
+      SELECT 
+        id,
+        username,
+        password,
+        enabled,
+        email,
+        header_menu_id,
+        sidebar_menu_id,
+        login_nav_command,
+        current_language_id
+      FROM user
+      WHERE username = :username
+      LIMIT 1
+      `,
       { username }
     );
+
     return rows[0] || null;
   } finally {
     conn.release();

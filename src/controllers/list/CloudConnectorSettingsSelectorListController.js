@@ -4,7 +4,13 @@ const CloudConnectorSettingsSelectorListService = require('../../services/list/C
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await CloudConnectorSettingsSelectorListService.getList(req.body);
+      const results = await CloudConnectorSettingsSelectorListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

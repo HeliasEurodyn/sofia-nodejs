@@ -1,6 +1,15 @@
 const MessageReceivedDashboardListModel = require('../../models/list/MessageReceivedDashboardListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MessageReceivedDashboardListModel.getList(data)
-};
+      return MessageReceivedDashboardListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

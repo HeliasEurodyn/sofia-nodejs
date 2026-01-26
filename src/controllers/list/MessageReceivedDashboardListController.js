@@ -4,7 +4,13 @@ const MessageReceivedDashboardListService = require('../../services/list/Message
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await MessageReceivedDashboardListService.getList(req.body);
+      const results = await MessageReceivedDashboardListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

@@ -1,6 +1,15 @@
 const VocabularyKeywordsListModel = require('../../models/list/VocabularyKeywordsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => VocabularyKeywordsListModel.getList(data)
-};
+      return VocabularyKeywordsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

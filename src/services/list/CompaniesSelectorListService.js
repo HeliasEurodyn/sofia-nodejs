@@ -1,6 +1,15 @@
 const CompaniesSelectorListModel = require('../../models/list/CompaniesSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => CompaniesSelectorListModel.getList(data)
-};
+      return CompaniesSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

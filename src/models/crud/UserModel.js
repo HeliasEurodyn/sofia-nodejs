@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -12,7 +12,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -20,13 +20,12 @@ module.exports = {
 
          /* SELECTION QUERY - user - */
 
-         const userFilters = {
-            user_obj_id: id
-         };
-         const [user_results] = await conn.query(
+         const userFilters = [id
+         ];
+         const [user_results] = await conn.execute(
          `SELECT username, id, email
-          FROM  ( SELECT `id`, `username`, `email`  FROM `user` ) user
-         WHERE user.id = :user_obj_id;`, userFilters );
+          FROM  ( SELECT id, username, email  FROM user ) user
+         WHERE user.id = ? `, userFilters );
 
          let user = {};
          data.user_obj = {};
@@ -34,6 +33,8 @@ module.exports = {
          {
             user = user_results[0];
             data.user_obj = user;
+         } else {
+            return data;
          }
 
          return data;

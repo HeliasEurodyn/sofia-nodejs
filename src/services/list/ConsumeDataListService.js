@@ -1,9 +1,48 @@
 const ConsumeDataListModel = require('../../models/list/ConsumeDataListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => ConsumeDataListModel.getList(data),
-   getSqlgf1List: (data) => ConsumeDataListModel.getSqlgf1List(data),
-   getSqlgf2List: (data) => ConsumeDataListModel.getSqlgf2List(data),
-   getSqlgf3List: (data) => ConsumeDataListModel.getSqlgf3List(data)
-};
+      return ConsumeDataListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getSqlgf1List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return ConsumeDataListModel.getSqlgf1List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf2List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return ConsumeDataListModel.getSqlgf2List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf3List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return ConsumeDataListModel.getSqlgf3List({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getSqlgf1List,
+      getSqlgf2List,
+      getSqlgf3List
+   };

@@ -1,8 +1,37 @@
 const AllOfferingsSelectorListModel = require('../../models/list/AllOfferingsSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => AllOfferingsSelectorListModel.getList(data),
-   getOwnerLeftFilterList: (data) => AllOfferingsSelectorListModel.getOwnerLeftFilterList(data),
-   getGfDataSharingMethodList: (data) => AllOfferingsSelectorListModel.getGfDataSharingMethodList(data)
-};
+      return AllOfferingsSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getOwnerLeftFilterList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return AllOfferingsSelectorListModel.getOwnerLeftFilterList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getGfDataSharingMethodList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return AllOfferingsSelectorListModel.getGfDataSharingMethodList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getOwnerLeftFilterList,
+      getGfDataSharingMethodList
+   };

@@ -4,31 +4,31 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      cf_id: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      sqlf_10: { virtual: true,  db_table: '',  db_field: '',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_title: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'title',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlf_9_1: { virtual: true,  db_table: '',  db_field: '',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlf_9: { virtual: true,  db_table: '',  db_field: '',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_input_profile: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'input_profile',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_input_data_source: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'input_data_source',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_profile_selector: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'profile_selector',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_profile_description: { virtual: false,  db_table: 'data_catalog_business_object',  db_field: 'profile_description',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      of_id: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'id',  section: 'orderby',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id: { virtual: false,  db_table: 'data_catalog_category',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_id_1: { virtual: false,  db_table: 'data_catalog_service',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_data_catalog_business_object_id: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'data_catalog_business_object_id',  section: 'filter',  type: 'bigint',  primary: false,  autoIncrement: false },
-      ft_created_on: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'created_on',  section: 'filter',  type: 'datetime',  primary: false,  autoIncrement: false },
-      ft_id_2: { virtual: false,  db_table: 'user',  db_field: 'id',  section: 'filter',  type: 'varchar',  primary: true,  autoIncrement: false },
-      ft_status: { virtual: false,  db_table: 'data_catalog_data_offerings',  db_field: 'status',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      dates_check: { virtual: true,  db_table: '',  db_field: '',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      country_check: { virtual: true,  db_table: '',  db_field: '',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cluster_check: { virtual: true,  db_table: '',  db_field: '',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      market_check: { virtual: true,  db_table: '',  db_field: '',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      role_check: { virtual: true,  db_table: '',  db_field: '',  section: 'filter',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_1: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_2: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_3: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false },
-      sqlgf_4: { virtual: true,  db_table: '',  db_field: '',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false }
+      cf_id: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      sqlf_10: { virtual: true, db_table: '', db_field: '', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_title: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'title', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      sqlf_9_1: { virtual: true, db_table: '', db_field: '', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      sqlf_9: { virtual: true, db_table: '', db_field: '', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_input_profile: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'input_profile', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_input_data_source: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'input_data_source', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_profile_selector: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'profile_selector', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_profile_description: { virtual: false, db_table: 'data_catalog_business_object', db_field: 'profile_description', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      of_id: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'id', section: 'orderby', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id: { virtual: false, db_table: 'data_catalog_category', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_id_1: { virtual: false, db_table: 'data_catalog_service', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '=' },
+      ft_data_catalog_business_object_id: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'data_catalog_business_object_id', section: 'filter', type: 'bigint', primary: false, autoIncrement: false, filterOperator: '=' },
+      ft_created_on: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'created_on', section: 'filter', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '=' },
+      ft_id_2: { virtual: false, db_table: 'user', db_field: 'id', section: 'filter', type: 'varchar', primary: true, autoIncrement: false, filterOperator: '<>' },
+      ft_status: { virtual: false, db_table: 'data_catalog_data_offerings', db_field: 'status', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      dates_check: { virtual: true, db_table: '', db_field: '', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      country_check: { virtual: true, db_table: '', db_field: '', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      cluster_check: { virtual: true, db_table: '', db_field: '', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      market_check: { virtual: true, db_table: '', db_field: '', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      role_check: { virtual: true, db_table: '', db_field: '', section: 'filter', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_1: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_2: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_3: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' },
+      sqlgf_4: { virtual: true, db_table: '', db_field: '', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' }
    },
 
    fromSql:
@@ -39,12 +39,13 @@ module.exports = {
          LEFT OUTER JOIN data_catalog_category data_catalog_category ON data_catalog_category.id = data_catalog_service.data_catalog_category_id
          LEFT OUTER JOIN user user ON user.id = data_catalog_data_offerings.created_by`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
@@ -58,7 +59,7 @@ module.exports = {
             (SELECT CONCAT(company.name,' <i class="fa fa-caret-right"></i> ', user.username)) as sqlf_9_1, 
             (date_format(data_catalog_data_offerings.created_on,'%d/%m/%Y %H:%i')) as sqlf_9
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 
@@ -69,7 +70,7 @@ module.exports = {
       }
    },
 
-   getSqlgf1List: async (filters) => {
+   getSqlgf1List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -95,7 +96,7 @@ module.exports = {
       }
    },
 
-   getSqlgf2List: async (filters) => {
+   getSqlgf2List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -121,7 +122,7 @@ module.exports = {
       }
    },
 
-   getSqlgf3List: async (filters) => {
+   getSqlgf3List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
@@ -147,7 +148,7 @@ module.exports = {
       }
    },
 
-   getSqlgf4List: async (filters) => {
+   getSqlgf4List: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {

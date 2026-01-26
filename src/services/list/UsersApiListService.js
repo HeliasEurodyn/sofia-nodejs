@@ -1,7 +1,26 @@
 const UsersApiListModel = require('../../models/list/UsersApiListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => UsersApiListModel.getList(data),
-   getCompanyNameGroupingList: (data) => UsersApiListModel.getCompanyNameGroupingList(data)
-};
+      return UsersApiListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCompanyNameGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return UsersApiListModel.getCompanyNameGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCompanyNameGroupingList
+   };

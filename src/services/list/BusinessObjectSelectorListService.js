@@ -1,8 +1,37 @@
 const BusinessObjectSelectorListModel = require('../../models/list/BusinessObjectSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => BusinessObjectSelectorListModel.getList(data),
-   getSqlgf2List: (data) => BusinessObjectSelectorListModel.getSqlgf2List(data),
-   getSqlgf3List: (data) => BusinessObjectSelectorListModel.getSqlgf3List(data)
-};
+      return BusinessObjectSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getSqlgf2List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return BusinessObjectSelectorListModel.getSqlgf2List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf3List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return BusinessObjectSelectorListModel.getSqlgf3List({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getSqlgf2List,
+      getSqlgf3List
+   };

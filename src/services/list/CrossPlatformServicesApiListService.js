@@ -1,8 +1,37 @@
 const CrossPlatformServicesApiListModel = require('../../models/list/CrossPlatformServicesApiListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => CrossPlatformServicesApiListModel.getList(data),
-   getCategoryGroupList: (data) => CrossPlatformServicesApiListModel.getCategoryGroupList(data),
-   getServiceGroupList: (data) => CrossPlatformServicesApiListModel.getServiceGroupList(data)
-};
+      return CrossPlatformServicesApiListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCategoryGroupList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return CrossPlatformServicesApiListModel.getCategoryGroupList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getServiceGroupList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return CrossPlatformServicesApiListModel.getServiceGroupList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCategoryGroupList,
+      getServiceGroupList
+   };

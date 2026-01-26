@@ -42,7 +42,17 @@ const login = async ({ username, password, userAgent, ipAddress }) => {
     ipAddress
   });
 
-  return { accessToken, refreshToken, sessionId, sessionExpiresOn };
+  const userPayload = {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    headerMenuId: user.header_menu_id,
+    sidebarMenuId: user.sidebar_menu_id,
+    loginNavCommand: user.login_nav_command,
+    currentLanguageId: user.current_language_id
+  };
+
+  return { accessToken, refreshToken, sessionId, sessionExpiresOn,  user: userPayload };
 };
 
 const refresh = async ({ sessionId, refreshToken, userAgent, ipAddress }) => {

@@ -1,6 +1,15 @@
 const CrossPlatformServiceCommentsListModel = require('../../models/list/CrossPlatformServiceCommentsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => CrossPlatformServiceCommentsListModel.getList(data)
-};
+      return CrossPlatformServiceCommentsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

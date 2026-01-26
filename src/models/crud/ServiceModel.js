@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -60,7 +60,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -119,7 +119,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -169,7 +169,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -177,13 +177,12 @@ module.exports = {
 
          /* SELECTION QUERY - service - */
 
-         const serviceFilters = {
-            service_obj_id: id
-         };
-         const [service_results] = await conn.query(
+         const serviceFilters = [id
+         ];
+         const [service_results] = await conn.execute(
          `SELECT user_profile, data_type, sharing_type, wizard_desctiption, energy_profile, building_profile, id, data_sharing_method, title, description, vocabulary_hub_link, type, lat, lon
           FROM service
-         WHERE service.id = :service_obj_id;`, serviceFilters );
+         WHERE service.id = ? `, serviceFilters );
 
          let service = {};
          data.service_obj = {};
@@ -191,32 +190,32 @@ module.exports = {
          {
             service = service_results[0];
             data.service_obj = service;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - service_process_tag - */
 
-         const service_process_tagFilters = {
-            service_process_tag_obj_service_id: service?.id
-         };
-         const [service_process_tag_results] = await conn.query(
+         const service_process_tagFilters = [service?.id
+         ];
+         const [service_process_tag_results] = await conn.execute(
          `SELECT id, process_tag_id, service_id
           FROM service_process_tag
-         WHERE service_process_tag.service_id = :service_process_tag_obj_service_id;`, service_process_tagFilters );
+         WHERE service_process_tag.service_id = ? `, service_process_tagFilters );
 
             data.service_obj.service_process_tag_obj = service_process_tag_results;
 
          for (const service_process_tag of service_process_tag_results)
-            service_process_tag{
+            {
 
             /* SELECTION QUERY - process_tag - */
 
-            const process_tagFilters = {
-               process_tag_obj_id: service_process_tag?.process_tag_id
-            };
-            const [process_tag_results] = await conn.query(
+            const process_tagFilters = [service_process_tag?.process_tag_id
+            ];
+            const [process_tag_results] = await conn.execute(
             `SELECT id, title
              FROM process_tag
-            WHERE process_tag.id = :process_tag_obj_id;`, process_tagFilters );
+            WHERE process_tag.id = ? `, process_tagFilters );
 
             let process_tag = {};
             data.service_obj.service_process_tag_obj.process_tag_obj = {};
@@ -224,33 +223,33 @@ module.exports = {
             {
                process_tag = process_tag_results[0];
                data.service_obj.service_process_tag_obj.process_tag_obj = process_tag;
+            } else {
+               return data;
             }
             service_process_tag}
 
          /* SELECTION QUERY - service_business_tag - */
 
-         const service_business_tagFilters = {
-            service_business_tag_obj_service_id: service?.id
-         };
-         const [service_business_tag_results] = await conn.query(
+         const service_business_tagFilters = [service?.id
+         ];
+         const [service_business_tag_results] = await conn.execute(
          `SELECT id, business_tag_id, service_id
           FROM service_business_tag
-         WHERE service_business_tag.service_id = :service_business_tag_obj_service_id;`, service_business_tagFilters );
+         WHERE service_business_tag.service_id = ? `, service_business_tagFilters );
 
             data.service_obj.service_business_tag_obj = service_business_tag_results;
 
          for (const service_business_tag of service_business_tag_results)
-            service_business_tag{
+            {
 
             /* SELECTION QUERY - business_tag - */
 
-            const business_tagFilters = {
-               business_tag_obj_id: service_business_tag?.business_tag_id
-            };
-            const [business_tag_results] = await conn.query(
+            const business_tagFilters = [service_business_tag?.business_tag_id
+            ];
+            const [business_tag_results] = await conn.execute(
             `SELECT id, title
              FROM business_tag
-            WHERE business_tag.id = :business_tag_obj_id;`, business_tagFilters );
+            WHERE business_tag.id = ? `, business_tagFilters );
 
             let business_tag = {};
             data.service_obj.service_business_tag_obj.business_tag_obj = {};
@@ -258,33 +257,33 @@ module.exports = {
             {
                business_tag = business_tag_results[0];
                data.service_obj.service_business_tag_obj.business_tag_obj = business_tag;
+            } else {
+               return data;
             }
             service_business_tag}
 
          /* SELECTION QUERY - service_vocabulary_keyword - */
 
-         const service_vocabulary_keywordFilters = {
-            service_vocabulary_keyword_obj_service_id: service?.id
-         };
-         const [service_vocabulary_keyword_results] = await conn.query(
+         const service_vocabulary_keywordFilters = [service?.id
+         ];
+         const [service_vocabulary_keyword_results] = await conn.execute(
          `SELECT id, vocabulary_keyword_id, service_id
           FROM service_vocabulary_keyword
-         WHERE service_vocabulary_keyword.service_id = :service_vocabulary_keyword_obj_service_id;`, service_vocabulary_keywordFilters );
+         WHERE service_vocabulary_keyword.service_id = ? `, service_vocabulary_keywordFilters );
 
             data.service_obj.service_vocabulary_keyword_obj = service_vocabulary_keyword_results;
 
          for (const service_vocabulary_keyword of service_vocabulary_keyword_results)
-            service_vocabulary_keyword{
+            {
 
             /* SELECTION QUERY - vocabulary_keywords - */
 
-            const vocabulary_keywordsFilters = {
-               vocabulary_keywords_obj_id: service_vocabulary_keyword?.vocabulary_keyword_id
-            };
-            const [vocabulary_keywords_results] = await conn.query(
+            const vocabulary_keywordsFilters = [service_vocabulary_keyword?.vocabulary_keyword_id
+            ];
+            const [vocabulary_keywords_results] = await conn.execute(
             `SELECT id, title
              FROM vocabulary_keywords
-            WHERE vocabulary_keywords.id = :vocabulary_keywords_obj_id;`, vocabulary_keywordsFilters );
+            WHERE vocabulary_keywords.id = ? `, vocabulary_keywordsFilters );
 
             let vocabulary_keywords = {};
             data.service_obj.service_vocabulary_keyword_obj.vocabulary_keywords_obj = {};
@@ -292,18 +291,19 @@ module.exports = {
             {
                vocabulary_keywords = vocabulary_keywords_results[0];
                data.service_obj.service_vocabulary_keyword_obj.vocabulary_keywords_obj = vocabulary_keywords;
+            } else {
+               return data;
             }
             service_vocabulary_keyword}
 
          /* SELECTION QUERY - service_wizard_fields - */
 
-         const service_wizard_fieldsFilters = {
-            service_wizard_fields_obj_service_id: service?.id
-         };
-         const [service_wizard_fields_results] = await conn.query(
+         const service_wizard_fieldsFilters = [service?.id
+         ];
+         const [service_wizard_fields_results] = await conn.execute(
          `SELECT id, short_order, service_id, classes, name, description, type, options
           FROM service_wizard_fields
-         WHERE service_wizard_fields.service_id = :service_wizard_fields_obj_service_id;`, service_wizard_fieldsFilters );
+         WHERE service_wizard_fields.service_id = ? `, service_wizard_fieldsFilters );
 
             data.service_obj.service_wizard_fields_obj = service_wizard_fields_results;
 
@@ -317,7 +317,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -325,14 +325,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const serviceFilters = {
-            service_obj_id: id
-         };
+         const serviceFilters = [id
+         ];
 
-         const [service_results] = await conn.query(
+         const [service_results] = await conn.execute(
          `SELECT id
           FROM service
-         WHERE service.id = :service_obj_id;`, serviceFilters );
+         WHERE service.id = ? `, serviceFilters );
 
          let service = {};
          data.service_obj = {};
@@ -342,79 +341,75 @@ module.exports = {
             data.service_obj = service;
          }
 
-         const service_process_tagFilters = {
-            service_process_tag_obj_service_id: service?.id
-         };
+         const service_process_tagFilters = [service?.id
+         ];
 
-         const [service_process_tag_results] = await conn.query(
+         const [service_process_tag_results] = await conn.execute(
          `SELECT id, process_tag_id, service_id
           FROM service_process_tag
-         WHERE service_process_tag.service_id = :service_process_tag_obj_service_id;`, service_process_tagFilters );
+         WHERE service_process_tag.service_id = ? `, service_process_tagFilters );
 
          data.service_obj.service_process_tag_obj = service_process_tag_results;
          for (const service_process_tag of service_process_tag_results)
-            service_process_tag{
+            {
             service_process_tag}
-         const service_business_tagFilters = {
-            service_business_tag_obj_service_id: service?.id
-         };
+         const service_business_tagFilters = [service?.id
+         ];
 
-         const [service_business_tag_results] = await conn.query(
+         const [service_business_tag_results] = await conn.execute(
          `SELECT id, business_tag_id, service_id
           FROM service_business_tag
-         WHERE service_business_tag.service_id = :service_business_tag_obj_service_id;`, service_business_tagFilters );
+         WHERE service_business_tag.service_id = ? `, service_business_tagFilters );
 
          data.service_obj.service_business_tag_obj = service_business_tag_results;
          for (const service_business_tag of service_business_tag_results)
-            service_business_tag{
+            {
             service_business_tag}
-         const service_vocabulary_keywordFilters = {
-            service_vocabulary_keyword_obj_service_id: service?.id
-         };
+         const service_vocabulary_keywordFilters = [service?.id
+         ];
 
-         const [service_vocabulary_keyword_results] = await conn.query(
+         const [service_vocabulary_keyword_results] = await conn.execute(
          `SELECT id, vocabulary_keyword_id, service_id
           FROM service_vocabulary_keyword
-         WHERE service_vocabulary_keyword.service_id = :service_vocabulary_keyword_obj_service_id;`, service_vocabulary_keywordFilters );
+         WHERE service_vocabulary_keyword.service_id = ? `, service_vocabulary_keywordFilters );
 
          data.service_obj.service_vocabulary_keyword_obj = service_vocabulary_keyword_results;
          for (const service_vocabulary_keyword of service_vocabulary_keyword_results)
-            service_vocabulary_keyword{
+            {
             service_vocabulary_keyword}
-         const service_wizard_fieldsFilters = {
-            service_wizard_fields_obj_service_id: service?.id
-         };
+         const service_wizard_fieldsFilters = [service?.id
+         ];
 
-         const [service_wizard_fields_results] = await conn.query(
+         const [service_wizard_fields_results] = await conn.execute(
          `SELECT id, service_id
           FROM service_wizard_fields
-         WHERE service_wizard_fields.service_id = :service_wizard_fields_obj_service_id;`, service_wizard_fieldsFilters );
+         WHERE service_wizard_fields.service_id = ? `, service_wizard_fieldsFilters );
 
          data.service_obj.service_wizard_fields_obj = service_wizard_fields_results;
 
          /* DELETE FROM DATABASE USING KEYS */
 
          const service_obj = data.service_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM service WHERE id = :id`, service_obj );
 
          for (const service_process_tag_obj of service_obj.service_process_tag_obj) {
-            await conn.query(
+            await conn.execute(
                `DELETE FROM service_process_tag WHERE id = :id`, service_process_tag_obj );
          }
 
          for (const service_business_tag_obj of service_obj.service_business_tag_obj) {
-            await conn.query(
+            await conn.execute(
                `DELETE FROM service_business_tag WHERE id = :id`, service_business_tag_obj );
          }
 
          for (const service_vocabulary_keyword_obj of service_obj.service_vocabulary_keyword_obj) {
-            await conn.query(
+            await conn.execute(
                `DELETE FROM service_vocabulary_keyword WHERE id = :id`, service_vocabulary_keyword_obj );
          }
 
          for (const service_wizard_fields_obj of service_obj.service_wizard_fields_obj) {
-            await conn.query(
+            await conn.execute(
                `DELETE FROM service_wizard_fields WHERE id = :id`, service_wizard_fields_obj );
          }
 

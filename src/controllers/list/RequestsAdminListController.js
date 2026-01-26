@@ -4,27 +4,57 @@ const RequestsAdminListService = require('../../services/list/RequestsAdminListS
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await RequestsAdminListService.getList(req.body);
+      const results = await RequestsAdminListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf11List: asyncHandler(async (req, res) => {
-      const results = await RequestsAdminListService.getSqlgf11List(req.body);
+      const results = await RequestsAdminListService.getSqlgf11List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf1List: asyncHandler(async (req, res) => {
-      const results = await RequestsAdminListService.getSqlgf1List(req.body);
+      const results = await RequestsAdminListService.getSqlgf1List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf2List: asyncHandler(async (req, res) => {
-      const results = await RequestsAdminListService.getSqlgf2List(req.body);
+      const results = await RequestsAdminListService.getSqlgf2List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf3List: asyncHandler(async (req, res) => {
-      const results = await RequestsAdminListService.getSqlgf3List(req.body);
+      const results = await RequestsAdminListService.getSqlgf3List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

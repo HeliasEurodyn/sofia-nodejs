@@ -1,6 +1,15 @@
 const MessagesReceivedListModel = require('../../models/list/MessagesReceivedListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MessagesReceivedListModel.getList(data)
-};
+      return MessagesReceivedListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

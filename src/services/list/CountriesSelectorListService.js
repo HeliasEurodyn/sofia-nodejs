@@ -1,7 +1,26 @@
 const CountriesSelectorListModel = require('../../models/list/CountriesSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => CountriesSelectorListModel.getList(data),
-   getGfNameList: (data) => CountriesSelectorListModel.getGfNameList(data)
-};
+      return CountriesSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getGfNameList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return CountriesSelectorListModel.getGfNameList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getGfNameList
+   };

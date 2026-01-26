@@ -1,9 +1,48 @@
 const ProvideDataListModel = require('../../models/list/ProvideDataListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => ProvideDataListModel.getList(data),
-   getCategoryGroupingList: (data) => ProvideDataListModel.getCategoryGroupingList(data),
-   getServiceGroupingList: (data) => ProvideDataListModel.getServiceGroupingList(data),
-   getBusinessObjectGroupingList: (data) => ProvideDataListModel.getBusinessObjectGroupingList(data)
-};
+      return ProvideDataListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCategoryGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return ProvideDataListModel.getCategoryGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getServiceGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return ProvideDataListModel.getServiceGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getBusinessObjectGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return ProvideDataListModel.getBusinessObjectGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCategoryGroupingList,
+      getServiceGroupingList,
+      getBusinessObjectGroupingList
+   };

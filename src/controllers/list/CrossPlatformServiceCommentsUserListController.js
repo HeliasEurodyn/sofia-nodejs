@@ -4,7 +4,13 @@ const CrossPlatformServiceCommentsUserListService = require('../../services/list
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await CrossPlatformServiceCommentsUserListService.getList(req.body);
+      const results = await CrossPlatformServiceCommentsUserListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

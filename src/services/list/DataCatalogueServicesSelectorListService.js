@@ -1,7 +1,26 @@
 const DataCatalogueServicesSelectorListModel = require('../../models/list/DataCatalogueServicesSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => DataCatalogueServicesSelectorListModel.getList(data),
-   getSqlgf1List: (data) => DataCatalogueServicesSelectorListModel.getSqlgf1List(data)
-};
+      return DataCatalogueServicesSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getSqlgf1List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataCatalogueServicesSelectorListModel.getSqlgf1List({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getSqlgf1List
+   };

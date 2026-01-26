@@ -1,9 +1,48 @@
 const DataProvidedDashboardListModel = require('../../models/list/DataProvidedDashboardListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => DataProvidedDashboardListModel.getList(data),
-   getSqlgf1List: (data) => DataProvidedDashboardListModel.getSqlgf1List(data),
-   getSqlgf2List: (data) => DataProvidedDashboardListModel.getSqlgf2List(data),
-   getSqlgf3List: (data) => DataProvidedDashboardListModel.getSqlgf3List(data)
-};
+      return DataProvidedDashboardListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getSqlgf1List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataProvidedDashboardListModel.getSqlgf1List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf2List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataProvidedDashboardListModel.getSqlgf2List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf3List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataProvidedDashboardListModel.getSqlgf3List({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getSqlgf1List,
+      getSqlgf2List,
+      getSqlgf3List
+   };

@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -50,7 +50,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -80,7 +80,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -109,7 +109,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -117,13 +117,12 @@ module.exports = {
 
          /* SELECTION QUERY - ids_resources - */
 
-         const ids_resourcesFilters = {
-            ids_resources_obj_id: id
-         };
-         const [ids_resources_results] = await conn.query(
+         const ids_resourcesFilters = [id
+         ];
+         const [ids_resources_results] = await conn.execute(
          `SELECT onenet_user_email, message, onenet_id, onenet_user_id, transaction_id, onenet_type, onenet_user_username, id, created_by, created_on, modified_by, modified_on, title, description, publisher, keywords, standard_license, ids_version, language, policy, interval_policy_from, interval_policy_to, source_type
           FROM ids_resources
-         WHERE ids_resources.id = :ids_resources_obj_id;`, ids_resourcesFilters );
+         WHERE ids_resources.id = ? `, ids_resourcesFilters );
 
          let ids_resources = {};
          data.ids_resources_obj = {};
@@ -131,32 +130,32 @@ module.exports = {
          {
             ids_resources = ids_resources_results[0];
             data.ids_resources_obj = ids_resources;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - onenet_ids_resourse_to_user - */
 
-         const onenet_ids_resourse_to_userFilters = {
-            onenet_ids_resourse_to_user_obj_ids_resource_id: ids_resources?.id
-         };
-         const [onenet_ids_resourse_to_user_results] = await conn.query(
+         const onenet_ids_resourse_to_userFilters = [ids_resources?.id
+         ];
+         const [onenet_ids_resourse_to_user_results] = await conn.execute(
          `SELECT id, ids_resource_id, onenet_user_id
           FROM onenet_ids_resourse_to_user
-         WHERE onenet_ids_resourse_to_user.ids_resource_id = :onenet_ids_resourse_to_user_obj_ids_resource_id;`, onenet_ids_resourse_to_userFilters );
+         WHERE onenet_ids_resourse_to_user.ids_resource_id = ? `, onenet_ids_resourse_to_userFilters );
 
             data.ids_resources_obj.onenet_ids_resourse_to_user_obj = onenet_ids_resourse_to_user_results;
 
          for (const onenet_ids_resourse_to_user of onenet_ids_resourse_to_user_results)
-            onenet_ids_resourse_to_user{
+            {
 
             /* SELECTION QUERY - onenet_user - */
 
-            const onenet_userFilters = {
-               onenet_user_obj_id: onenet_ids_resourse_to_user?. onenet_user_id
-            };
-            const [onenet_user_results] = await conn.query(
+            const onenet_userFilters = [onenet_ids_resourse_to_user?. onenet_user_id
+            ];
+            const [onenet_user_results] = await conn.execute(
             `SELECT id, created_by, created_on, modified_by, modified_on, short_order, email, enabled, password, status, username
              FROM onenet_user
-            WHERE onenet_user.id = :onenet_user_obj_id;`, onenet_userFilters );
+            WHERE onenet_user.id = ? `, onenet_userFilters );
 
             let onenet_user = {};
             data.ids_resources_obj.onenet_ids_resourse_to_user_obj.onenet_user_obj = {};
@@ -164,6 +163,8 @@ module.exports = {
             {
                onenet_user = onenet_user_results[0];
                data.ids_resources_obj.onenet_ids_resourse_to_user_obj.onenet_user_obj = onenet_user;
+            } else {
+               return data;
             }
             onenet_ids_resourse_to_user}
 
@@ -176,7 +177,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -184,14 +185,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const ids_resourcesFilters = {
-            ids_resources_obj_id: id
-         };
+         const ids_resourcesFilters = [id
+         ];
 
-         const [ids_resources_results] = await conn.query(
+         const [ids_resources_results] = await conn.execute(
          `SELECT id
           FROM ids_resources
-         WHERE ids_resources.id = :ids_resources_obj_id;`, ids_resourcesFilters );
+         WHERE ids_resources.id = ? `, ids_resourcesFilters );
 
          let ids_resources = {};
          data.ids_resources_obj = {};
@@ -201,29 +201,28 @@ module.exports = {
             data.ids_resources_obj = ids_resources;
          }
 
-         const onenet_ids_resourse_to_userFilters = {
-            onenet_ids_resourse_to_user_obj_ids_resource_id: ids_resources?.id
-         };
+         const onenet_ids_resourse_to_userFilters = [ids_resources?.id
+         ];
 
-         const [onenet_ids_resourse_to_user_results] = await conn.query(
+         const [onenet_ids_resourse_to_user_results] = await conn.execute(
          `SELECT id, ids_resource_id
           FROM onenet_ids_resourse_to_user
-         WHERE onenet_ids_resourse_to_user.ids_resource_id = :onenet_ids_resourse_to_user_obj_ids_resource_id;`, onenet_ids_resourse_to_userFilters );
+         WHERE onenet_ids_resourse_to_user.ids_resource_id = ? `, onenet_ids_resourse_to_userFilters );
 
          data.ids_resources_obj.onenet_ids_resourse_to_user_obj = onenet_ids_resourse_to_user_results;
          for (const onenet_ids_resourse_to_user of onenet_ids_resourse_to_user_results)
-            onenet_ids_resourse_to_user{
+            {
             onenet_ids_resourse_to_user}
 
          /* DELETE FROM DATABASE USING KEYS */
 
          const ids_resources_obj = data.ids_resources_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM ids_resources WHERE id = :id`, ids_resources_obj );
          ids_resources_obj.id = ids_resources_result.insertId;
 
          for (const onenet_ids_resourse_to_user_obj of ids_resources_obj.onenet_ids_resourse_to_user_obj) {
-            await conn.query(
+            await conn.execute(
                `DELETE FROM onenet_ids_resourse_to_user WHERE id = :id`, onenet_ids_resourse_to_user_obj );
             onenet_ids_resourse_to_user_obj.id = onenet_ids_resourse_to_user_result.insertId;
          }

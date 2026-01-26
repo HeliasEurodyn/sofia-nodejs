@@ -4,7 +4,13 @@ const DataCatalogueCategorySelectorListService = require('../../services/list/Da
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await DataCatalogueCategorySelectorListService.getList(req.body);
+      const results = await DataCatalogueCategorySelectorListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

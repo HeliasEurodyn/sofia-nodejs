@@ -1,6 +1,15 @@
 const BusinessTagSelectorListModel = require('../../models/list/BusinessTagSelectorListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => BusinessTagSelectorListModel.getList(data)
-};
+      return BusinessTagSelectorListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

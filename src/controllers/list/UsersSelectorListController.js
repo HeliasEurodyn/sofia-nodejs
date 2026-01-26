@@ -4,12 +4,24 @@ const UsersSelectorListService = require('../../services/list/UsersSelectorListS
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await UsersSelectorListService.getList(req.body);
+      const results = await UsersSelectorListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getGfNameList: asyncHandler(async (req, res) => {
-      const results = await UsersSelectorListService.getGfNameList(req.body);
+      const results = await UsersSelectorListService.getGfNameList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

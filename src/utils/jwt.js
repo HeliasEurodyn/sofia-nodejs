@@ -16,9 +16,32 @@ const signRefreshToken = (payload) => jwt.sign(payload, REFRESH_SECRET, { expire
 const verifyAccessToken = (token) => jwt.verify(token, ACCESS_SECRET);
 const verifyRefreshToken = (token) => jwt.verify(token, REFRESH_SECRET);
 
+// utils/jwt.js
+
+const getUserIdFromAccessToken = (token) => {
+  // Anonymous user
+  if (!token) {
+    return '';
+  }
+
+  let payload;
+  try {
+    payload = verifyAccessToken(token);
+  } catch (e) {
+    throw new Error('ACCESS_TOKEN_INVALID');
+  }
+
+  if (!payload?.sub) {
+    throw new Error('ACCESS_TOKEN_INVALID');
+  }
+
+  return payload.sub;
+};
+
 module.exports = {
   signAccessToken,
   signRefreshToken,
   verifyAccessToken,
-  verifyRefreshToken
+  verifyRefreshToken,
+  getUserIdFromAccessToken
 };

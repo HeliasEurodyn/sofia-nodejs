@@ -1,7 +1,26 @@
 const DataCatalogueServicesApiListModel = require('../../models/list/DataCatalogueServicesApiListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => DataCatalogueServicesApiListModel.getList(data),
-   getCategoryGroupList: (data) => DataCatalogueServicesApiListModel.getCategoryGroupList(data)
-};
+      return DataCatalogueServicesApiListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCategoryGroupList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataCatalogueServicesApiListModel.getCategoryGroupList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCategoryGroupList
+   };

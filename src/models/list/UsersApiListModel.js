@@ -4,13 +4,13 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      user_id: { virtual: false,  db_table: 'user',  db_field: 'id',  section: 'column',  type: 'varchar',  primary: true,  autoIncrement: false },
-      email: { virtual: false,  db_table: 'user',  db_field: 'email',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      username: { virtual: false,  db_table: 'user',  db_field: 'username',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      status: { virtual: false,  db_table: 'user',  db_field: 'status',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      company_id: { virtual: false,  db_table: 'user',  db_field: 'company_id',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      name: { virtual: false,  db_table: 'company',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      company_name_grouping: { virtual: false,  db_table: 'company',  db_field: 'name',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false }
+      user_id: { virtual: false, db_table: 'user', db_field: 'id', section: 'column', type: 'varchar', primary: true, autoIncrement: false, filterOperator: 'like' },
+      email: { virtual: false, db_table: 'user', db_field: 'email', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      username: { virtual: false, db_table: 'user', db_field: 'username', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      status: { virtual: false, db_table: 'user', db_field: 'status', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      company_id: { virtual: false, db_table: 'user', db_field: 'company_id', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      name: { virtual: false, db_table: 'company', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      company_name_grouping: { virtual: false, db_table: 'company', db_field: 'name', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' }
    },
 
    fromSql:
@@ -18,12 +18,13 @@ module.exports = {
          user user
          LEFT OUTER JOIN company company ON company.id = user.company_id`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
@@ -34,7 +35,7 @@ module.exports = {
             user.company_id as company_id, 
             company.name as name
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 
@@ -45,7 +46,7 @@ module.exports = {
       }
    },
 
-   getCompanyNameGroupingList: async (filters) => {
+   getCompanyNameGroupingList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {

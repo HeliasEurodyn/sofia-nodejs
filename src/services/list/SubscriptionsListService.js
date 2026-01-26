@@ -1,6 +1,15 @@
 const SubscriptionsListModel = require('../../models/list/SubscriptionsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => SubscriptionsListModel.getList(data)
-};
+      return SubscriptionsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

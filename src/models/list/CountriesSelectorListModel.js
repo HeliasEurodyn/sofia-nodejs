@@ -4,11 +4,11 @@ const ModelHelper = require('../../helpers/ModelHelper');
 module.exports = {
 
    listFields: {
-      cf_id: { virtual: false,  db_table: 'country',  db_field: 'id',  section: 'column',  type: 'bigint',  primary: true,  autoIncrement: true },
-      cf_name: { virtual: false,  db_table: 'country',  db_field: 'name',  section: 'column',  type: 'varchar',  primary: false,  autoIncrement: false },
-      cf_modified_on: { virtual: false,  db_table: 'country',  db_field: 'modified_on',  section: 'column',  type: 'datetime',  primary: false,  autoIncrement: false },
-      of_modified_on: { virtual: false,  db_table: 'country',  db_field: 'modified_on',  section: 'orderby',  type: 'datetime',  primary: false,  autoIncrement: false },
-      gf_name: { virtual: false,  db_table: 'cluster',  db_field: 'name',  section: 'leftgroup',  type: 'varchar',  primary: false,  autoIncrement: false }
+      cf_id: { virtual: false, db_table: 'country', db_field: 'id', section: 'column', type: 'bigint', primary: true, autoIncrement: true, filterOperator: '=' },
+      cf_name: { virtual: false, db_table: 'country', db_field: 'name', section: 'column', type: 'varchar', primary: false, autoIncrement: false, filterOperator: 'like' },
+      cf_modified_on: { virtual: false, db_table: 'country', db_field: 'modified_on', section: 'column', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '=' },
+      of_modified_on: { virtual: false, db_table: 'country', db_field: 'modified_on', section: 'orderby', type: 'datetime', primary: false, autoIncrement: false, filterOperator: '=' },
+      gf_name: { virtual: false, db_table: 'cluster', db_field: 'name', section: 'leftgroup', type: 'varchar', primary: false, autoIncrement: false, filterOperator: '=' }
    },
 
    fromSql:
@@ -16,12 +16,13 @@ module.exports = {
          country country
          LEFT OUTER JOIN cluster cluster ON cluster.id = country.cluster_id`,
 
-   getList: async (filters) => {
+   getList: async ({ filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {
 
          const { whereSql, params } = ModelHelper.buildWhere(module.exports.listFields, filters);
+         const orderBySql = ModelHelper.buildOrderBy(module.exports.listFields, filters);
 
          const [results] = await conn.query(`
          SELECT 
@@ -29,7 +30,7 @@ module.exports = {
             country.name as cf_name, 
             country.modified_on as cf_modified_on
          ${module.exports.fromSql}
-         ${whereSql}`, params);
+         ${whereSql} ${orderBySql}`, params);
 
          return results;
 
@@ -40,7 +41,7 @@ module.exports = {
       }
    },
 
-   getGfNameList: async (filters) => {
+   getGfNameList: async ({filters, userId }) => {
       const conn = await pool.getConnection();
 
       try {

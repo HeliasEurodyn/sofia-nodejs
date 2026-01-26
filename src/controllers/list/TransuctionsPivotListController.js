@@ -4,17 +4,35 @@ const TransuctionsPivotListService = require('../../services/list/TransuctionsPi
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await TransuctionsPivotListService.getList(req.body);
+      const results = await TransuctionsPivotListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getGfProviderList: asyncHandler(async (req, res) => {
-      const results = await TransuctionsPivotListService.getGfProviderList(req.body);
+      const results = await TransuctionsPivotListService.getGfProviderList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getGfOfferingTitleList: asyncHandler(async (req, res) => {
-      const results = await TransuctionsPivotListService.getGfOfferingTitleList(req.body);
+      const results = await TransuctionsPivotListService.getGfOfferingTitleList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

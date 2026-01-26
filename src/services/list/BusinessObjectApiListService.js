@@ -1,8 +1,37 @@
 const BusinessObjectApiListModel = require('../../models/list/BusinessObjectApiListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => BusinessObjectApiListModel.getList(data),
-   getCategoryGroupingList: (data) => BusinessObjectApiListModel.getCategoryGroupingList(data),
-   getServiceGroupingList: (data) => BusinessObjectApiListModel.getServiceGroupingList(data)
-};
+      return BusinessObjectApiListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCategoryGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return BusinessObjectApiListModel.getCategoryGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getServiceGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return BusinessObjectApiListModel.getServiceGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCategoryGroupingList,
+      getServiceGroupingList
+   };

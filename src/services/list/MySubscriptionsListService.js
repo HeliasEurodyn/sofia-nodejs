@@ -1,10 +1,59 @@
 const MySubscriptionsListModel = require('../../models/list/MySubscriptionsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MySubscriptionsListModel.getList(data),
-   getCategoryGroupingList: (data) => MySubscriptionsListModel.getCategoryGroupingList(data),
-   getServiceGroupingList: (data) => MySubscriptionsListModel.getServiceGroupingList(data),
-   getBusinessObjectGroupingList: (data) => MySubscriptionsListModel.getBusinessObjectGroupingList(data),
-   getUsersGroupingList: (data) => MySubscriptionsListModel.getUsersGroupingList(data)
-};
+      return MySubscriptionsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getCategoryGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MySubscriptionsListModel.getCategoryGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getServiceGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MySubscriptionsListModel.getServiceGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getBusinessObjectGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MySubscriptionsListModel.getBusinessObjectGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getUsersGroupingList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return MySubscriptionsListModel.getUsersGroupingList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getCategoryGroupingList,
+      getServiceGroupingList,
+      getBusinessObjectGroupingList,
+      getUsersGroupingList
+   };

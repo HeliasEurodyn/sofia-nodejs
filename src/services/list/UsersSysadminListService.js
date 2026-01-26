@@ -1,7 +1,26 @@
 const UsersSysadminListModel = require('../../models/list/UsersSysadminListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => UsersSysadminListModel.getList(data),
-   getGfNameList: (data) => UsersSysadminListModel.getGfNameList(data)
-};
+      return UsersSysadminListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getGfNameList = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return UsersSysadminListModel.getGfNameList({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getGfNameList
+   };

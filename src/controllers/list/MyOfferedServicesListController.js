@@ -4,27 +4,57 @@ const MyOfferedServicesListService = require('../../services/list/MyOfferedServi
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesListService.getList(req.body);
+      const results = await MyOfferedServicesListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf1List: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesListService.getSqlgf1List(req.body);
+      const results = await MyOfferedServicesListService.getSqlgf1List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf2List: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesListService.getSqlgf2List(req.body);
+      const results = await MyOfferedServicesListService.getSqlgf2List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf3List: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesListService.getSqlgf3List(req.body);
+      const results = await MyOfferedServicesListService.getSqlgf3List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getSqlgf4List: asyncHandler(async (req, res) => {
-      const results = await MyOfferedServicesListService.getSqlgf4List(req.body);
+      const results = await MyOfferedServicesListService.getSqlgf4List({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

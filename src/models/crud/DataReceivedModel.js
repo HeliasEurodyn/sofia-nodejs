@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -114,6 +114,7 @@ module.exports = {
          firstname: { type: 'varchar',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          storage_max_soc: { type: 'double',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          ev_primary_heating_source: { type: 'text',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
+         is_certificate_generated: { type: 'int',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          use_cloud_connector: { type: 'int',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          participate_in_flex_products: { type: 'int',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          ev: { type: 'int',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
@@ -187,7 +188,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -210,7 +211,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -232,7 +233,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -240,13 +241,12 @@ module.exports = {
 
          /* SELECTION QUERY - data_send - */
 
-         const data_sendFilters = {
-            data_send_obj_id: id
-         };
-         const [data_send_results] = await conn.query(
+         const data_sendFilters = [id
+         ];
+         const [data_send_results] = await conn.execute(
          `SELECT status, file_type, user_code, fileSize, fileName, id, created_by, created_on, modified_by, modified_on, title, description, message, data_catalog_data_offerings_id
           FROM data_send
-         WHERE data_send.id = :data_send_obj_id;`, data_sendFilters );
+         WHERE data_send.id = ? `, data_sendFilters );
 
          let data_send = {};
          data.data_send_obj = {};
@@ -254,17 +254,18 @@ module.exports = {
          {
             data_send = data_send_results[0];
             data.data_send_obj = data_send;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_data_offerings - */
 
-         const data_catalog_data_offeringsFilters = {
-            data_catalog_data_offerings_obj_id: data_send?.data_catalog_data_offerings_id
-         };
-         const [data_catalog_data_offerings_results] = await conn.query(
+         const data_catalog_data_offeringsFilters = [data_send?.data_catalog_data_offerings_id
+         ];
+         const [data_catalog_data_offerings_results] = await conn.execute(
          `SELECT file_schema_sample, use_custom_semantics, file_schema, active_from_enable, profile_description, status, profile_selector, file_schema_sample_filename, active_to, file_schema_filename, active_from, title, active_to_enable, id, created_by, created_on, modified_by, modified_on, input_profile, input_data_source, comments, data_catalog_business_object_id
           FROM data_catalog_data_offerings
-         WHERE data_catalog_data_offerings.id = :data_catalog_data_offerings_obj_id;`, data_catalog_data_offeringsFilters );
+         WHERE data_catalog_data_offerings.id = ? `, data_catalog_data_offeringsFilters );
 
          let data_catalog_data_offerings = {};
          data.data_send_obj.data_catalog_data_offerings_obj = {};
@@ -272,17 +273,18 @@ module.exports = {
          {
             data_catalog_data_offerings = data_catalog_data_offerings_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj = data_catalog_data_offerings;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_business_object - */
 
-         const data_catalog_business_objectFilters = {
-            data_catalog_business_object_obj_id: data_catalog_data_offerings?.data_catalog_business_object_id
-         };
-         const [data_catalog_business_object_results] = await conn.query(
+         const data_catalog_business_objectFilters = [data_catalog_data_offerings?.data_catalog_business_object_id
+         ];
+         const [data_catalog_business_object_results] = await conn.execute(
          `SELECT type_of_communication, file_schema_filename, wizard_id, type, status, file_schema_sample_filename, file_schema_sample, file_schema, profile_description, profile_selector, id, short_order, code, name, data_catalog_service_id
           FROM data_catalog_business_object
-         WHERE data_catalog_business_object.id = :data_catalog_business_object_obj_id;`, data_catalog_business_objectFilters );
+         WHERE data_catalog_business_object.id = ? `, data_catalog_business_objectFilters );
 
          let data_catalog_business_object = {};
          data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_business_object_obj = {};
@@ -290,17 +292,18 @@ module.exports = {
          {
             data_catalog_business_object = data_catalog_business_object_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_business_object_obj = data_catalog_business_object;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_service - */
 
-         const data_catalog_serviceFilters = {
-            data_catalog_service_obj_id: data_catalog_business_object?.data_catalog_service_id
-         };
-         const [data_catalog_service_results] = await conn.query(
+         const data_catalog_serviceFilters = [data_catalog_business_object?.data_catalog_service_id
+         ];
+         const [data_catalog_service_results] = await conn.execute(
          `SELECT id, short_order, code, name, short_description, data_catalog_category_id
           FROM data_catalog_service
-         WHERE data_catalog_service.id = :data_catalog_service_obj_id;`, data_catalog_serviceFilters );
+         WHERE data_catalog_service.id = ? `, data_catalog_serviceFilters );
 
          let data_catalog_service = {};
          data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_business_object_obj.data_catalog_service_obj = {};
@@ -308,17 +311,18 @@ module.exports = {
          {
             data_catalog_service = data_catalog_service_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_business_object_obj.data_catalog_service_obj = data_catalog_service;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_category - */
 
-         const data_catalog_categoryFilters = {
-            data_catalog_category_obj_id: data_catalog_service?.data_catalog_category_id
-         };
-         const [data_catalog_category_results] = await conn.query(
+         const data_catalog_categoryFilters = [data_catalog_service?.data_catalog_category_id
+         ];
+         const [data_catalog_category_results] = await conn.execute(
          `SELECT id, short_order, code, name
           FROM data_catalog_category
-         WHERE data_catalog_category.id = :data_catalog_category_obj_id;`, data_catalog_categoryFilters );
+         WHERE data_catalog_category.id = ? `, data_catalog_categoryFilters );
 
          let data_catalog_category = {};
          data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_business_object_obj.data_catalog_service_obj.data_catalog_category_obj = {};
@@ -326,18 +330,18 @@ module.exports = {
          {
             data_catalog_category = data_catalog_category_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_business_object_obj.data_catalog_service_obj.data_catalog_category_obj = data_catalog_category;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - data_catalog_data_requests - */
 
-         const data_catalog_data_requestsFilters = {
-            data_catalog_data_requests_obj_owner_id: Auth::GetUserId(),
-            data_catalog_data_requests_obj_data_catalog_data_offering_id: data_catalog_data_offerings?.id
-         };
-         const [data_catalog_data_requests_results] = await conn.query(
+         const data_catalog_data_requestsFilters = [userId,data_catalog_data_offerings?.id
+         ];
+         const [data_catalog_data_requests_results] = await conn.execute(
          `SELECT owner_id, id, created_by, created_on, modified_by, modified_on, input_profile, input_data_source, comments, data_catalog_business_object_id, data_catalog_data_offering_id, status, viewed_by_offering_owner
           FROM data_catalog_data_requests
-         WHERE data_catalog_data_requests.owner_id = :data_catalog_data_requests_obj_owner_id;data_catalog_data_requests.data_catalog_data_offering_id = :data_catalog_data_requests_obj_data_catalog_data_offering_id;`, data_catalog_data_requestsFilters );
+         WHERE data_catalog_data_requests.owner_id = ? data_catalog_data_requests.data_catalog_data_offering_id = ? `, data_catalog_data_requestsFilters );
 
          let data_catalog_data_requests = {};
          data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_data_requests_obj = {};
@@ -345,17 +349,18 @@ module.exports = {
          {
             data_catalog_data_requests = data_catalog_data_requests_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_data_requests_obj = data_catalog_data_requests;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - onenet_consumer - */
 
-         const onenet_consumerFilters = {
-            onenet_consumer_obj_id: data_catalog_data_requests?.created_by
-         };
-         const [onenet_consumer_results] = await conn.query(
+         const onenet_consumerFilters = [data_catalog_data_requests?.created_by
+         ];
+         const [onenet_consumer_results] = await conn.execute(
          `SELECT ed_api_url, ecc_url, data_app_url, id, broker_url
-          FROM  ( SELECT `id`, `handler_url` AS ed_api_url, `ecc_url`, `broker_url`, `data_app_url`  FROM `user` ) onenet_consumer
-         WHERE onenet_consumer.id = :onenet_consumer_obj_id;`, onenet_consumerFilters );
+          FROM  ( SELECT id, handler_url AS ed_api_url, ecc_url, broker_url, data_app_url  FROM user ) onenet_consumer
+         WHERE onenet_consumer.id = ? `, onenet_consumerFilters );
 
          let onenet_consumer = {};
          data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_data_requests_obj.onenet_consumer_obj = {};
@@ -363,17 +368,18 @@ module.exports = {
          {
             onenet_consumer = onenet_consumer_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj.data_catalog_data_requests_obj.onenet_consumer_obj = onenet_consumer;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - user_offering - */
 
-         const user_offeringFilters = {
-            user_obj_id: data_catalog_data_offerings?.created_by
-         };
-         const [user_offering_results] = await conn.query(
-         `SELECT direction, instulation, energy_certificate_offering, lastname, installed_power, cloud_connector_id, provider_fiware_url, lat, storage, ev_capacity, smart_readiness_indicator_size, smart_readiness_indicator, firstname, storage_max_soc, ev_primary_heating_source, use_cloud_connector, participate_in_flex_products, ev, storage_capacity, lon, production_type, production_installed_power, ev_maximum_charging_power, street, production, surface, telephone, energy_certificate_size, zipcode, ev_primary_cooling_source, storage_c_rating, billing_type, storage_min_soc, energy_certificate_name, energy_certificate, ev_willing_to_participate, smart_readiness_indicator_name, handler_public_url, connector_protocol_url, connector_public_url, connector_control_url, connector_management_url, handler_url, market_id, ecc_url, broker_url, provider_appdata_url, country_id, onenet_role_id, consumer_fiware_url, data_app_url, ed_api_url, id, created_by, created_on, modified_by, modified_on, short_order, dateformat, email, enabled, login_nav_command, password, provider, provider_user_id, search_nav_command, status, username, current_language_id, default_language_id, header_menu_id, sidebar_menu_id, company_id, is_onenet
+         const user_offeringFilters = [data_catalog_data_offerings?.created_by
+         ];
+         const [user_offering_results] = await conn.execute(
+         `SELECT direction, instulation, energy_certificate_offering, lastname, installed_power, cloud_connector_id, provider_fiware_url, lat, storage, ev_capacity, smart_readiness_indicator_size, smart_readiness_indicator, firstname, storage_max_soc, ev_primary_heating_source, is_certificate_generated, use_cloud_connector, participate_in_flex_products, ev, storage_capacity, lon, production_type, production_installed_power, ev_maximum_charging_power, street, production, surface, telephone, energy_certificate_size, zipcode, ev_primary_cooling_source, storage_c_rating, billing_type, storage_min_soc, energy_certificate_name, energy_certificate, ev_willing_to_participate, smart_readiness_indicator_name, handler_public_url, connector_protocol_url, connector_public_url, connector_control_url, connector_management_url, handler_url, market_id, ecc_url, broker_url, provider_appdata_url, country_id, onenet_role_id, consumer_fiware_url, data_app_url, ed_api_url, id, created_by, created_on, modified_by, modified_on, short_order, dateformat, email, enabled, login_nav_command, password, provider, provider_user_id, search_nav_command, status, username, current_language_id, default_language_id, header_menu_id, sidebar_menu_id, company_id, is_onenet
           FROM user
-         WHERE user.id = :user_obj_id;`, user_offeringFilters );
+         WHERE user.id = ? `, user_offeringFilters );
 
          let user_offering = {};
          data.data_send_obj.data_catalog_data_offerings_obj.user_offering_obj = {};
@@ -381,17 +387,18 @@ module.exports = {
          {
             user_offering = user_offering_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj.user_offering_obj = user_offering;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - company_offering - */
 
-         const company_offeringFilters = {
-            company_obj_id: user_offering?.company_id
-         };
-         const [company_offering_results] = await conn.query(
+         const company_offeringFilters = [user_offering?.company_id
+         ];
+         const [company_offering_results] = await conn.execute(
          `SELECT id, created_by, created_on, modified_by, modified_on, name, address, phone, description
           FROM company
-         WHERE company.id = :company_obj_id;`, company_offeringFilters );
+         WHERE company.id = ? `, company_offeringFilters );
 
          let company_offering = {};
          data.data_send_obj.data_catalog_data_offerings_obj.user_offering_obj.company_offering_obj = {};
@@ -399,6 +406,8 @@ module.exports = {
          {
             company_offering = company_offering_results[0];
             data.data_send_obj.data_catalog_data_offerings_obj.user_offering_obj.company_offering_obj = company_offering;
+         } else {
+            return data;
          }
 
          return data;
@@ -410,7 +419,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -418,14 +427,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const data_sendFilters = {
-            data_send_obj_id: id
-         };
+         const data_sendFilters = [id
+         ];
 
-         const [data_send_results] = await conn.query(
+         const [data_send_results] = await conn.execute(
          `SELECT id, data_catalog_data_offerings_id
           FROM data_send
-         WHERE data_send.id = :data_send_obj_id;`, data_sendFilters );
+         WHERE data_send.id = ? `, data_sendFilters );
 
          let data_send = {};
          data.data_send_obj = {};
@@ -439,7 +447,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const data_send_obj = data.data_send_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM data_send WHERE id = :id`, data_send_obj );
 
          await conn.commit();

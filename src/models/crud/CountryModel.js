@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -26,7 +26,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -49,7 +49,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -71,7 +71,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -79,13 +79,12 @@ module.exports = {
 
          /* SELECTION QUERY - country - */
 
-         const countryFilters = {
-            country_obj_id: id
-         };
-         const [country_results] = await conn.query(
+         const countryFilters = [id
+         ];
+         const [country_results] = await conn.execute(
          `SELECT code, id, created_by, created_on, modified_by, modified_on, name, cluster_id
           FROM country
-         WHERE country.id = :country_obj_id;`, countryFilters );
+         WHERE country.id = ? `, countryFilters );
 
          let country = {};
          data.country_obj = {};
@@ -93,17 +92,18 @@ module.exports = {
          {
             country = country_results[0];
             data.country_obj = country;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - cluster - */
 
-         const clusterFilters = {
-            cluster_obj_id: country?.cluster_id
-         };
-         const [cluster_results] = await conn.query(
+         const clusterFilters = [country?.cluster_id
+         ];
+         const [cluster_results] = await conn.execute(
          `SELECT id, created_by, created_on, modified_by, modified_on, name, code
           FROM cluster
-         WHERE cluster.id = :cluster_obj_id;`, clusterFilters );
+         WHERE cluster.id = ? `, clusterFilters );
 
          let cluster = {};
          data.country_obj.cluster_obj = {};
@@ -111,6 +111,8 @@ module.exports = {
          {
             cluster = cluster_results[0];
             data.country_obj.cluster_obj = cluster;
+         } else {
+            return data;
          }
 
          return data;
@@ -122,7 +124,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -130,14 +132,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const countryFilters = {
-            country_obj_id: id
-         };
+         const countryFilters = [id
+         ];
 
-         const [country_results] = await conn.query(
+         const [country_results] = await conn.execute(
          `SELECT id, cluster_id
           FROM country
-         WHERE country.id = :country_obj_id;`, countryFilters );
+         WHERE country.id = ? `, countryFilters );
 
          let country = {};
          data.country_obj = {};
@@ -151,7 +152,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const country_obj = data.country_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM country WHERE id = :id`, country_obj );
          country_obj.id = country_result.insertId;
 

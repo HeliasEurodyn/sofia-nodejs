@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -11,7 +11,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -34,7 +34,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -56,7 +56,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -64,13 +64,12 @@ module.exports = {
 
          /* SELECTION QUERY - process_tag - */
 
-         const process_tagFilters = {
-            process_tag_obj_id: id
-         };
-         const [process_tag_results] = await conn.query(
+         const process_tagFilters = [id
+         ];
+         const [process_tag_results] = await conn.execute(
          `SELECT id, title
           FROM process_tag
-         WHERE process_tag.id = :process_tag_obj_id;`, process_tagFilters );
+         WHERE process_tag.id = ? `, process_tagFilters );
 
          let process_tag = {};
          data.process_tag_obj = {};
@@ -78,6 +77,8 @@ module.exports = {
          {
             process_tag = process_tag_results[0];
             data.process_tag_obj = process_tag;
+         } else {
+            return data;
          }
 
          return data;
@@ -89,7 +90,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -97,14 +98,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const process_tagFilters = {
-            process_tag_obj_id: id
-         };
+         const process_tagFilters = [id
+         ];
 
-         const [process_tag_results] = await conn.query(
+         const [process_tag_results] = await conn.execute(
          `SELECT id
           FROM process_tag
-         WHERE process_tag.id = :process_tag_obj_id;`, process_tagFilters );
+         WHERE process_tag.id = ? `, process_tagFilters );
 
          let process_tag = {};
          data.process_tag_obj = {};
@@ -118,7 +118,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const process_tag_obj = data.process_tag_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM process_tag WHERE id = :id`, process_tag_obj );
 
          await conn.commit();

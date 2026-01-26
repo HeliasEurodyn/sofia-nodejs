@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -67,10 +67,12 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
+               console.log('data');
+         console.log(data);
       try {
          await conn.beginTransaction();
 
@@ -90,7 +92,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -112,7 +114,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -120,13 +122,12 @@ module.exports = {
 
          /* SELECTION QUERY - service_offering - */
 
-         const service_offeringFilters = {
-            service_offering_obj_id: id
-         };
-         const [service_offering_results] = await conn.query(
+         const service_offeringFilters = [id
+         ];
+         const [service_offering_results] = await conn.execute(
          `SELECT building_profile, lastname, sharing_type, installed_power, billing_type, energy_certificate, street, email, id, zipcode, participate_in_flex_products, ev, production, user_profile, storage, country, data_type, direction, instulation, surface, energy_profile, location, firstname, telephone, smart_readiness_indicator, created_by, created_on, modified_by, modified_on, offering_user, status, service_id, title, description, data_sharing_method, delivery_type, target
           FROM service_offering
-         WHERE service_offering.id = :service_offering_obj_id;`, service_offeringFilters );
+         WHERE service_offering.id = ? `, service_offeringFilters );
 
          let service_offering = {};
          data.service_offering_obj = {};
@@ -134,17 +135,93 @@ module.exports = {
          {
             service_offering = service_offering_results[0];
             data.service_offering_obj = service_offering;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - service_app_view - */
 
-         const service_app_viewFilters = {
-            service_app_view_obj_id: service_offering?.service_id
-         };
-         const [service_app_view_results] = await conn.query(
+         const service_app_viewFilters = [service_offering?.service_id
+         ];
+         const [service_app_view_results] = await conn.execute(
          `SELECT sharing_type_id, user_profile_code, building_profile_code, data_sharing_method_code, energy_profile_code, type_code, profiles, building_profile, sharing_type, user_profile, energy_profile, vocabulary_keywords, data_sharing_method, profile, business_tags, process_tags, type, title, id
-          FROM  ( SELECT srv.id         AS id,  srv.title      AS title,   CASE    WHEN srv.data_sharing_method = 'one_way' THEN '<i class="fa fa-arrow-right"></i> One Way'   WHEN srv.data_sharing_method = 'two_way' THEN '<i class="fa fa-arrow-right-arrow-left"></i> Two Ways'   ELSE ''  END AS data_sharing_method,    CASE    WHEN srv.type = 'building_to_grid' THEN '<i class="fa fa-building"></i> Building-to-Grid (B2G) Service'   WHEN srv.type = 'grid_to_building' THEN '<i class="fa fa-plug"></i> Grid-to-Building (G2B) Service'   WHEN srv.type = 'human_to' THEN '<i class="fa fa-users"></i> Human-to-Building Interface & Interactivity'   WHEN srv.type = 'system_int' THEN '<i class="fa fa-network-wired"></i> Systems Interoperability'   WHEN srv.type = 'building_data' THEN '<i class="fa fa-database"></i> Building-to-Data-Consumers Service'   ELSE ''  END AS type,      srv.user_profile AS profile,    (SELECT GROUP_CONCAT(CONCAT('<i class="fa fa-tags"></i> ', bt.title, '<br>') SEPARATOR '')    FROM service_business_tag sbt    INNER JOIN business_tag bt     ON sbt.business_tag_id = bt.id    WHERE sbt.service_id = srv.id  ) AS business_tags,    (SELECT GROUP_CONCAT(CONCAT('<i class="fa fa-tag"></i> ', bt.title, '<br>') SEPARATOR '')   FROM   service_process_tag sbt    INNER JOIN process_tag bt      ON sbt.process_tag_id = bt.id   WHERE  sbt.service_id = srv.id) AS process_tags,        (SELECT GROUP_CONCAT(CONCAT('<i class="fa fa-hashtag"></i> ', bt.title, '<br>') SEPARATOR '')   FROM   service_vocabulary_keyword sbt    INNER JOIN vocabulary_keywords bt      ON sbt.vocabulary_keyword_id = bt.id   WHERE  sbt.service_id = srv.id) AS vocabulary_keywords,      CONCAT(   CASE     WHEN srv.user_profile = 1 THEN '<i class="fa fa-toggle-on enabled-toggle"></i> User Profile <br>'    ELSE '<i class="fa fa-toggle-off disabled-toggle"></i> User Profile <br>'   END,      CASE     WHEN srv.building_profile = 1 THEN '<i class="fa fa-toggle-on enabled-toggle"></i> Building Profile <br>'    ELSE '<i class="fa fa-toggle-off disabled-toggle"></i> Building Profile <br>'   END,      CASE     WHEN srv.energy_profile = 1 THEN '<i class="fa fa-toggle-on enabled-toggle"></i> Energy Profile <br>'    ELSE '<i class="fa fa-toggle-off disabled-toggle"></i> Energy Profile <br>'   END      ) AS profiles,      CASE    WHEN srv.sharing_type = 'wizard' THEN '<i class="fa fa-hat-wizard"></i> Wizard'   WHEN srv.sharing_type = 'files' THEN '<i class="fa fa-file-lines"></i> Files'   ELSE ''  END AS sharing_type,      srv.user_profile,  srv.building_profile,  srv.energy_profile,  srv.sharing_type AS sharing_type_id,  srv.type AS type_code,  srv.data_sharing_method AS data_sharing_method_code,    srv.user_profile AS user_profile_code,    srv.energy_profile AS energy_profile_code,    srv.building_profile AS building_profile_code  FROM   service srv  ) service_app_view
-         WHERE service_app_view.id = :service_app_view_obj_id;`, service_app_viewFilters );
+          FROM  ( SELECT srv.id         AS id,
+  srv.title      AS title,
+ 
+  CASE 
+   WHEN srv.data_sharing_method = 'one_way' THEN '<i class="fa fa-arrow-right"></i> One Way'
+   WHEN srv.data_sharing_method = 'two_way' THEN '<i class="fa fa-arrow-right-arrow-left"></i> Two Ways'
+   ELSE ''
+  END AS data_sharing_method,
+  
+  CASE 
+   WHEN srv.type = 'building_to_grid' THEN '<i class="fa fa-building"></i> Building-to-Grid (B2G) Service'
+   WHEN srv.type = 'grid_to_building' THEN '<i class="fa fa-plug"></i> Grid-to-Building (G2B) Service'
+   WHEN srv.type = 'human_to' THEN '<i class="fa fa-users"></i> Human-to-Building Interface & Interactivity'
+   WHEN srv.type = 'system_int' THEN '<i class="fa fa-network-wired"></i> Systems Interoperability'
+   WHEN srv.type = 'building_data' THEN '<i class="fa fa-database"></i> Building-to-Data-Consumers Service'
+   ELSE ''
+  END AS type,
+    
+  srv.user_profile AS profile,
+  
+  (SELECT GROUP_CONCAT(CONCAT('<i class="fa fa-tags"></i> ', bt.title, '<br>') SEPARATOR '')
+    FROM service_business_tag sbt
+    INNER JOIN business_tag bt
+     ON sbt.business_tag_id = bt.id
+    WHERE sbt.service_id = srv.id
+  ) AS business_tags,
+  
+  (SELECT GROUP_CONCAT(CONCAT('<i class="fa fa-tag"></i> ', bt.title, '<br>') SEPARATOR '')
+   FROM   service_process_tag sbt
+    INNER JOIN process_tag bt
+      ON sbt.process_tag_id = bt.id
+   WHERE  sbt.service_id = srv.id) AS process_tags,
+   
+   
+  (SELECT GROUP_CONCAT(CONCAT('<i class="fa fa-hashtag"></i> ', bt.title, '<br>') SEPARATOR '')
+   FROM   service_vocabulary_keyword sbt
+    INNER JOIN vocabulary_keywords bt
+      ON sbt.vocabulary_keyword_id = bt.id
+   WHERE  sbt.service_id = srv.id) AS vocabulary_keywords,
+   
+   CONCAT(
+   CASE 
+    WHEN srv.user_profile = 1 THEN '<i class="fa fa-toggle-on enabled-toggle"></i> User Profile <br>'
+    ELSE '<i class="fa fa-toggle-off disabled-toggle"></i> User Profile <br>'
+   END,
+   
+   CASE 
+    WHEN srv.building_profile = 1 THEN '<i class="fa fa-toggle-on enabled-toggle"></i> Building Profile <br>'
+    ELSE '<i class="fa fa-toggle-off disabled-toggle"></i> Building Profile <br>'
+   END,
+   
+   CASE 
+    WHEN srv.energy_profile = 1 THEN '<i class="fa fa-toggle-on enabled-toggle"></i> Energy Profile <br>'
+    ELSE '<i class="fa fa-toggle-off disabled-toggle"></i> Energy Profile <br>'
+   END
+   
+   ) AS profiles,
+   
+   CASE 
+   WHEN srv.sharing_type = 'wizard' THEN '<i class="fa fa-hat-wizard"></i> Wizard'
+   WHEN srv.sharing_type = 'files' THEN '<i class="fa fa-file-lines"></i> Files'
+   ELSE ''
+  END AS sharing_type,
+  
+  
+  srv.user_profile,
+  srv.building_profile,
+  srv.energy_profile,
+  srv.sharing_type AS sharing_type_id,
+  srv.type AS type_code,
+  srv.data_sharing_method AS data_sharing_method_code, 
+   srv.user_profile AS user_profile_code, 
+   srv.energy_profile AS energy_profile_code, 
+   srv.building_profile AS building_profile_code 
+ FROM   service srv
+  ) service_app_view
+         WHERE service_app_view.id = ? `, service_app_viewFilters );
 
          let service_app_view = {};
          data.service_offering_obj.service_app_view_obj = {};
@@ -152,6 +229,8 @@ module.exports = {
          {
             service_app_view = service_app_view_results[0];
             data.service_offering_obj.service_app_view_obj = service_app_view;
+         } else {
+            return data;
          }
 
          return data;
@@ -163,7 +242,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -171,14 +250,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const service_offeringFilters = {
-            service_offering_obj_id: id
-         };
+         const service_offeringFilters = [id
+         ];
 
-         const [service_offering_results] = await conn.query(
+         const [service_offering_results] = await conn.execute(
          `SELECT id, service_id
           FROM service_offering
-         WHERE service_offering.id = :service_offering_obj_id;`, service_offeringFilters );
+         WHERE service_offering.id = ? `, service_offeringFilters );
 
          let service_offering = {};
          data.service_offering_obj = {};
@@ -192,7 +270,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const service_offering_obj = data.service_offering_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM service_offering WHERE id = :id`, service_offering_obj );
 
          await conn.commit();

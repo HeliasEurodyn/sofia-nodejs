@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -16,7 +16,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -39,7 +39,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -61,7 +61,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -69,13 +69,12 @@ module.exports = {
 
          /* SELECTION QUERY - cluster - */
 
-         const clusterFilters = {
-            cluster_obj_id: id
-         };
-         const [cluster_results] = await conn.query(
+         const clusterFilters = [id
+         ];
+         const [cluster_results] = await conn.execute(
          `SELECT code, id, created_by, created_on, modified_by, modified_on, name
           FROM cluster
-         WHERE cluster.id = :cluster_obj_id;`, clusterFilters );
+         WHERE cluster.id = ? `, clusterFilters );
 
          let cluster = {};
          data.cluster_obj = {};
@@ -83,6 +82,8 @@ module.exports = {
          {
             cluster = cluster_results[0];
             data.cluster_obj = cluster;
+         } else {
+            return data;
          }
 
          return data;
@@ -94,7 +95,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -102,14 +103,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const clusterFilters = {
-            cluster_obj_id: id
-         };
+         const clusterFilters = [id
+         ];
 
-         const [cluster_results] = await conn.query(
+         const [cluster_results] = await conn.execute(
          `SELECT id
           FROM cluster
-         WHERE cluster.id = :cluster_obj_id;`, clusterFilters );
+         WHERE cluster.id = ? `, clusterFilters );
 
          let cluster = {};
          data.cluster_obj = {};
@@ -123,7 +123,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const cluster_obj = data.cluster_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM cluster WHERE id = :id`, cluster_obj );
          cluster_obj.id = cluster_result.insertId;
 

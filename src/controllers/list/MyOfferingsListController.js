@@ -4,7 +4,13 @@ const MyOfferingsListService = require('../../services/list/MyOfferingsListServi
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await MyOfferingsListService.getList(req.body);
+      const results = await MyOfferingsListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 

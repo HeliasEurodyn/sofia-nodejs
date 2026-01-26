@@ -1,6 +1,15 @@
 const WizardsListModel = require('../../models/list/WizardsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => WizardsListModel.getList(data)
-};
+      return WizardsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

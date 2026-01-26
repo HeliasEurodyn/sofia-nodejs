@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const DataTransactionsPivotListController = require('../../controllers/list/DataTransactionsPivotListController');
 
-router.get('/', DataTransactionsPivotListController.getList);
+router.post('/', DataTransactionsPivotListController.getList);
 router.get('/sqlgf_1/', DataTransactionsPivotListController.getSqlgf1List);
 router.get('/sqlgf_2/', DataTransactionsPivotListController.getSqlgf2List);
 router.get('/sqlgf_3/', DataTransactionsPivotListController.getSqlgf3List);

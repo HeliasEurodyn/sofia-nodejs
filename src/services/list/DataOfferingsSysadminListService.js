@@ -1,10 +1,59 @@
-const DataOfferingsSysadminListModel = require('../../models/list/DataOfferingsSysadminListModel');
+const DataOfferingsSysAdminListModel = require('../../models/list/DataOfferingsSysAdminListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => DataOfferingsSysadminListModel.getList(data),
-   getSqlgf1List: (data) => DataOfferingsSysadminListModel.getSqlgf1List(data),
-   getSqlgf2List: (data) => DataOfferingsSysadminListModel.getSqlgf2List(data),
-   getSqlgf3List: (data) => DataOfferingsSysadminListModel.getSqlgf3List(data),
-   getSqlgf4List: (data) => DataOfferingsSysadminListModel.getSqlgf4List(data)
-};
+      return DataOfferingsSysAdminListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   const getSqlgf1List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataOfferingsSysAdminListModel.getSqlgf1List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf2List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataOfferingsSysAdminListModel.getSqlgf2List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf3List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataOfferingsSysAdminListModel.getSqlgf3List({
+         ...data,
+         userId
+      });
+   };
+
+
+   const getSqlgf4List = async ({ data, ctx }) => {
+      const { userId } = ctx;
+
+      return DataOfferingsSysAdminListModel.getSqlgf4List({
+         ...data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList,
+      getSqlgf1List,
+      getSqlgf2List,
+      getSqlgf3List,
+      getSqlgf4List
+   };

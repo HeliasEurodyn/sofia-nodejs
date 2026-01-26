@@ -1,6 +1,15 @@
 const UsersListModel = require('../../models/list/UsersListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => UsersListModel.getList(data)
-};
+      return UsersListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

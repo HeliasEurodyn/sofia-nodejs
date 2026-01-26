@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -11,7 +11,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -34,7 +34,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -56,7 +56,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -64,13 +64,12 @@ module.exports = {
 
          /* SELECTION QUERY - business_tag - */
 
-         const business_tagFilters = {
-            business_tag_obj_id: id
-         };
-         const [business_tag_results] = await conn.query(
+         const business_tagFilters = [id
+         ];
+         const [business_tag_results] = await conn.execute(
          `SELECT id, title
           FROM business_tag
-         WHERE business_tag.id = :business_tag_obj_id;`, business_tagFilters );
+         WHERE business_tag.id = ? `, business_tagFilters );
 
          let business_tag = {};
          data.business_tag_obj = {};
@@ -78,6 +77,8 @@ module.exports = {
          {
             business_tag = business_tag_results[0];
             data.business_tag_obj = business_tag;
+         } else {
+            return data;
          }
 
          return data;
@@ -89,7 +90,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -97,14 +98,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const business_tagFilters = {
-            business_tag_obj_id: id
-         };
+         const business_tagFilters = [id
+         ];
 
-         const [business_tag_results] = await conn.query(
+         const [business_tag_results] = await conn.execute(
          `SELECT id
           FROM business_tag
-         WHERE business_tag.id = :business_tag_obj_id;`, business_tagFilters );
+         WHERE business_tag.id = ? `, business_tagFilters );
 
          let business_tag = {};
          data.business_tag_obj = {};
@@ -118,7 +118,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const business_tag_obj = data.business_tag_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM business_tag WHERE id = :id`, business_tag_obj );
 
          await conn.commit();

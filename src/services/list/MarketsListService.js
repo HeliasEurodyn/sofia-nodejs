@@ -1,6 +1,15 @@
 const MarketsListModel = require('../../models/list/MarketsListModel');
 
-module.exports = {
+   const getList = async ({ data, ctx }) => {
+      const { userId } = ctx;
 
-   getList: (data) => MarketsListModel.getList(data)
-};
+      return MarketsListModel.getList({
+         filters: data,
+         userId
+      });
+   };
+
+
+   module.exports = {
+      getList
+   };

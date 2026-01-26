@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -14,7 +14,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -22,13 +22,12 @@ module.exports = {
 
          /* SELECTION QUERY - wizards - */
 
-         const wizardsFilters = {
-            wizards_obj_id: id
-         };
-         const [wizards_results] = await conn.query(
+         const wizardsFilters = [id
+         ];
+         const [wizards_results] = await conn.execute(
          `SELECT icon, id, description, title, name
           FROM wizards
-         WHERE wizards.id = :wizards_obj_id;`, wizardsFilters );
+         WHERE wizards.id = ? `, wizardsFilters );
 
          let wizards = {};
          data.wizards_obj = {};
@@ -36,6 +35,8 @@ module.exports = {
          {
             wizards = wizards_results[0];
             data.wizards_obj = wizards;
+         } else {
+            return data;
          }
 
          return data;
@@ -47,7 +48,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -55,14 +56,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const wizardsFilters = {
-            wizards_obj_id: id
-         };
+         const wizardsFilters = [id
+         ];
 
-         const [wizards_results] = await conn.query(
+         const [wizards_results] = await conn.execute(
          `SELECT id
           FROM wizards
-         WHERE wizards.id = :wizards_obj_id;`, wizardsFilters );
+         WHERE wizards.id = ? `, wizardsFilters );
 
          let wizards = {};
          data.wizards_obj = {};
@@ -76,7 +76,7 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const wizards_obj = data.wizards_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM wizards WHERE id = :id`, wizards_obj );
 
          await conn.commit();

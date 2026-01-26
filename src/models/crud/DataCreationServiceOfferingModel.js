@@ -1,6 +1,6 @@
-const pool = require('../db');
+const pool = require('../../db');
 const { v4: uuid } = require('uuid');
-const ModelHelper = require('../helpers/ModelHelper');
+const ModelHelper = require('../../helpers/ModelHelper');
 
 module.exports = {
 
@@ -62,7 +62,7 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
+   create: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -90,7 +90,7 @@ module.exports = {
       }
    },
 
-   update: async (data) => {
+   update: async ({ data, userId }) => {
       let sql, params, res;
       const conn = await pool.getConnection();
 
@@ -116,7 +116,7 @@ module.exports = {
       }
    },
 
-   getById: async (id) => {
+   getById: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
 
@@ -124,13 +124,12 @@ module.exports = {
 
          /* SELECTION QUERY - provide_data - */
 
-         const provide_dataFilters = {
-            provide_data_obj_id: id
-         };
-         const [provide_data_results] = await conn.query(
+         const provide_dataFilters = [id
+         ];
+         const [provide_data_results] = await conn.execute(
          `SELECT notification_send, id, created_by, created_on, modified_by, modified_on, file, file_name, file_size, file_type, title, description, service_offering_id, provide_user
           FROM provide_data
-         WHERE provide_data.id = :provide_data_obj_id;`, provide_dataFilters );
+         WHERE provide_data.id = ? `, provide_dataFilters );
 
          let provide_data = {};
          data.provide_data_obj = {};
@@ -138,17 +137,18 @@ module.exports = {
          {
             provide_data = provide_data_results[0];
             data.provide_data_obj = provide_data;
+         } else {
+            return data;
          }
 
          /* SELECTION QUERY - service_offering - */
 
-         const service_offeringFilters = {
-            service_offering_obj_id: provide_data?.service_offering_id
-         };
-         const [service_offering_results] = await conn.query(
+         const service_offeringFilters = [provide_data?.service_offering_id
+         ];
+         const [service_offering_results] = await conn.execute(
          `SELECT id, created_by, created_on, modified_by, modified_on, offering_user, status, service_id, title, description, data_sharing_method, delivery_type, target, user_profile, energy_profile, building_profile, firstname, lastname, email, country, street, zipcode, telephone, location, installed_power, billing_type, participate_in_flex_products, production, storage, ev, surface, direction, instulation, energy_certificate, smart_readiness_indicator, data_type, sharing_type
           FROM service_offering
-         WHERE service_offering.id = :service_offering_obj_id;`, service_offeringFilters );
+         WHERE service_offering.id = ? `, service_offeringFilters );
 
          let service_offering = {};
          data.provide_data_obj.service_offering_obj = {};
@@ -156,6 +156,8 @@ module.exports = {
          {
             service_offering = service_offering_results[0];
             data.provide_data_obj.service_offering_obj = service_offering;
+         } else {
+            return data;
          }
 
          return data;
@@ -167,7 +169,7 @@ module.exports = {
       }
    },
 
-   delete: async (id) => {
+   delete: async ({ id, userId }) => {
       const conn = await pool.getConnection();
       const data = {};
       try {
@@ -175,14 +177,13 @@ module.exports = {
 
          /* SELECT KEYS FROM DATABASE */
 
-         const provide_dataFilters = {
-            provide_data_obj_id: id
-         };
+         const provide_dataFilters = [id
+         ];
 
-         const [provide_data_results] = await conn.query(
+         const [provide_data_results] = await conn.execute(
          `SELECT id, service_offering_id
           FROM provide_data
-         WHERE provide_data.id = :provide_data_obj_id;`, provide_dataFilters );
+         WHERE provide_data.id = ? `, provide_dataFilters );
 
          let provide_data = {};
          data.provide_data_obj = {};
@@ -192,14 +193,13 @@ module.exports = {
             data.provide_data_obj = provide_data;
          }
 
-         const service_offeringFilters = {
-            service_offering_obj_id: provide_data?.service_offering_id
-         };
+         const service_offeringFilters = [provide_data?.service_offering_id
+         ];
 
-         const [service_offering_results] = await conn.query(
+         const [service_offering_results] = await conn.execute(
          `SELECT id
           FROM service_offering
-         WHERE service_offering.id = :service_offering_obj_id;`, service_offeringFilters );
+         WHERE service_offering.id = ? `, service_offeringFilters );
 
          let service_offering = {};
          data.provide_data_obj.service_offering_obj = {};
@@ -213,11 +213,11 @@ module.exports = {
          /* DELETE FROM DATABASE USING KEYS */
 
          const provide_data_obj = data.provide_data_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM provide_data WHERE id = :id`, provide_data_obj );
 
          const service_offering_obj = provide_data_obj.service_offering_obj;
-         await conn.query(
+         await conn.execute(
             `DELETE FROM service_offering WHERE id = :id`, service_offering_obj );
 
          await conn.commit();

@@ -4,17 +4,35 @@ const AllOfferingsSelectorListService = require('../../services/list/AllOffering
 module.exports = {
 
    getList: asyncHandler(async (req, res) => {
-      const results = await AllOfferingsSelectorListService.getList(req.body);
+      const results = await AllOfferingsSelectorListService.getList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getOwnerLeftFilterList: asyncHandler(async (req, res) => {
-      const results = await AllOfferingsSelectorListService.getOwnerLeftFilterList(req.body);
+      const results = await AllOfferingsSelectorListService.getOwnerLeftFilterList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    }),
 
    getGfDataSharingMethodList: asyncHandler(async (req, res) => {
-      const results = await AllOfferingsSelectorListService.getGfDataSharingMethodList(req.body);
+      const results = await AllOfferingsSelectorListService.getGfDataSharingMethodList({
+         data: req.body,
+         ctx: {
+            userId: req.user?.id || ''
+            }
+      });
+
       res.json(results);
    })
 
