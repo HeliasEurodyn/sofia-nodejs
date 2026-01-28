@@ -5,7 +5,7 @@
       "type": "node",
       "request": "launch",
       "name": "Debug app.js",
-      "program": "${workspaceFolder}/src/app.js",
+      "program": "${workspaceFolder}/src/stomp_app.js",
       "cwd": "${workspaceFolder}/src",
       "skipFiles": ["<node_internals>/**"],
       "runtimeArgs": ["--watch"],
