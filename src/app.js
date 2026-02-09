@@ -54,3 +54,11 @@ app.use('/api/list/department', DepartmentListRoutes);
 const DepartmentFormRoutes = require('./routes/form/DepartmentFormRoutes');
 app.use('/api/form/d1896b1c-9599-4ea9-a333-004df7d278bf', DepartmentFormRoutes);
 /* FORM DepartmentFormRoutes - END */
+/* LIST GraphTemplateListRoutes - START */
+const GraphTemplateListRoutes = require('./routes/list/GraphTemplateListRoutes');
+app.use('/api/list/graph-template', GraphTemplateListRoutes);
+/* LIST GraphTemplateListRoutes - END */
+/* FORM GraphTemplateFormRoutes - START */
+const GraphTemplateFormRoutes = require('./routes/form/GraphTemplateFormRoutes');
+app.use('/api/form/graph-template', GraphTemplateFormRoutes);
+/* FORM GraphTemplateFormRoutes - END */
