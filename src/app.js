@@ -49,6 +49,10 @@ module.exports = app;
 const neo4jRoutes = require('./routes/neo4jRoutes');
 app.use('/api/neo4j', neo4jRoutes);
 
+
+const notificationRoutes = require('./routes/NotificationRoutes');
+app.use('/api/notification', notificationRoutes);
+
 /* LIST DepartmentListRoutes - START */
 const DepartmentListRoutes = require('./routes/list/DepartmentListRoutes');
 app.use('/api/list/department', DepartmentListRoutes);
