@@ -46,6 +46,9 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
+const neo4jRoutes = require('./routes/neo4jRoutes');
+app.use('/api/neo4j', neo4jRoutes);
+
 /* LIST DepartmentListRoutes - START */
 const DepartmentListRoutes = require('./routes/list/DepartmentListRoutes');
 app.use('/api/list/department', DepartmentListRoutes);
@@ -62,3 +65,7 @@ app.use('/api/list/graph-template', GraphTemplateListRoutes);
 const GraphTemplateFormRoutes = require('./routes/form/GraphTemplateFormRoutes');
 app.use('/api/form/graph-template', GraphTemplateFormRoutes);
 /* FORM GraphTemplateFormRoutes - END */
+/* FORM UserSettingsFormRoutes - START */
+const UserSettingsFormRoutes = require('./routes/form/UserSettingsFormRoutes');
+app.use('/api/form/user-settings', UserSettingsFormRoutes);
+/* FORM UserSettingsFormRoutes - END */
