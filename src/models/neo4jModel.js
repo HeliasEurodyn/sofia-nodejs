@@ -1,7 +1,10 @@
 const neo4j = require('neo4j-driver');
-const driver = require('../neo4j');
 
-class Neo4jRepository {
+class Neo4jModel {
+
+  constructor(driver) {
+    this.driver = driver;
+  }
 
   mapNode(node) {
     return {
@@ -28,31 +31,31 @@ class Neo4jRepository {
   }
 
   async getAllNodes() {
-    const session = driver.session();
+    const session = this.driver.session();
     try {
       const result = await session.run('MATCH (n) RETURN n');
-      return result.records.map(r => mapNode(r.get('n')));
+      return result.records.map(r => this.mapNode(r.get('n')));
     } finally {
       await session.close();
     }
   }
 
   async getNodeById(id) {
-    const session = driver.session();
+    const session = this.driver.session();
     try {
       const result = await session.run(
         'MATCH (n) WHERE id(n) = $id RETURN n',
         { id: neo4j.int(id) }
       );
       if (!result.records.length) return null;
-      return mapNode(result.records[0].get('n'));
+      return this.mapNode(result.records[0].get('n'));
     } finally {
       await session.close();
     }
   }
 
   async createNode({ labels = [], properties = [] }) {
-    const session = driver.session();
+    const session = this.driver.session();
 
     const props = {};
     properties.forEach(p => (props[p.name] = p.value));
@@ -64,14 +67,14 @@ class Neo4jRepository {
         `CREATE (n${labelStr} $props) RETURN n`,
         { props }
       );
-      return mapNode(result.records[0].get('n'));
+      return this.mapNode(result.records[0].get('n'));
     } finally {
       await session.close();
     }
   }
 
   async deleteNodeById(id) {
-    const session = driver.session();
+    const session = this.driver.session();
     try {
       const result = await session.run(
         'MATCH (n) WHERE id(n) = $id DELETE n RETURN count(n) AS cnt',
@@ -84,10 +87,10 @@ class Neo4jRepository {
   }
 
   async getAllRelationships() {
-    const session = driver.session();
+    const session = this.driver.session();
     try {
       const result = await session.run('MATCH ()-[r]->() RETURN r');
-      return result.records.map(r => mapRelationship(r.get('r')));
+      return result.records.map(r => this.mapRelationship(r.get('r')));
     } finally {
       await session.close();
     }
@@ -98,7 +101,7 @@ class Neo4jRepository {
       return;
     }
 
-    const session = driver.session();
+    const session = this.driver.session();
 
     const query = `
       UNWIND $nodes AS node
@@ -126,7 +129,7 @@ class Neo4jRepository {
 
   async runQuery(query) {
 
-  const session = driver.session();
+  const session = this.driver.session();
 
   try {
       const result = await session.run(query);
@@ -164,4 +167,4 @@ class Neo4jRepository {
 
 }
 
-module.exports = Neo4jRepository;
+module.exports = Neo4jModel;

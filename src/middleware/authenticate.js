@@ -13,11 +13,11 @@ const authenticate = (req, res, next) => {
     const payload = verifyAccessToken(token);
 
     // Optional αλλά "Google-like": το access token πρέπει να ανήκει στο ίδιο session cookie
-    const cookieName = getSessionCookieName();
-    const sidCookie = req.cookies?.[cookieName];
-    if (!sidCookie || payload.sid !== sidCookie) {
-      return res.status(401).json({ message: 'Session mismatch' });
-    }
+    // const cookieName = getSessionCookieName();
+    // const sidCookie = req.cookies?.[cookieName];
+    // if (!sidCookie || payload.sid !== sidCookie) {
+    //   return res.status(401).json({ message: 'Session mismatch' });
+    // }
 
     req.user = { id: payload.sub, username: payload.username, sid: payload.sid };
     return next();

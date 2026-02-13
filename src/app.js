@@ -19,6 +19,11 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(cors());
+// app.use(cors({
+//   origin: 'http://localhost:5021',
+//   credentials: true
+// }));
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -46,12 +51,25 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
+const notificationRoutes = require('./routes/NotificationRoutes');
+app.use('/api/notification', notificationRoutes);
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
+
 const neo4jRoutes = require('./routes/neo4jRoutes');
 app.use('/api/neo4j', neo4jRoutes);
 
+const neo4jSettingsRoutes = require('./routes/neo4jSettingsRoutes');
+app.use('/api/neo4j-settings', neo4jSettingsRoutes);
 
-const notificationRoutes = require('./routes/NotificationRoutes');
-app.use('/api/notification', notificationRoutes);
+const rssRoutes = require('./routes/rssRoutes');
+app.use('/api/rss', rssRoutes);
 
 /* LIST DepartmentListRoutes - START */
 const DepartmentListRoutes = require('./routes/list/DepartmentListRoutes');

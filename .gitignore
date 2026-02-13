@@ -19,7 +19,6 @@ build/
 coverage/
 
 # IDE / Editor settings
-.vscode/
 .idea/
 *.swp
 
