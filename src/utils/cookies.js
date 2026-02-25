@@ -6,12 +6,18 @@ const sameSite = process.env.COOKIE_SAMESITE || (isProd ? 'strict' : 'lax');
 
 const getSessionCookieName = () => cookieName;
 
+// const getSessionCookieOptions = () => ({
+//   httpOnly: true,
+//   secure,
+//   sameSite,
+//   path: '/',
+// });
+
 const getSessionCookieOptions = () => ({
   httpOnly: true,
-  secure,
-  sameSite,
-  path: '/',
-  // maxAge set per-login based on TTL
+  sameSite: 'lax',
+  secure: false,
+  path: '/'
 });
 
 module.exports = { getSessionCookieName, getSessionCookieOptions };

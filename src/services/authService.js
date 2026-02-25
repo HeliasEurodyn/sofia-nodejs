@@ -56,21 +56,21 @@ const login = async ({ username, password, userAgent, ipAddress }) => {
 };
 
 const refresh = async ({ sessionId, refreshToken, userAgent, ipAddress }) => {
-  if (!sessionId) throw new Error('SESSION_MISSING');
+   if (!sessionId) throw new Error('SESSION_MISSING');
 
-  // 1) session must exist + not revoked + not expired
-  const session = await authModel.getSessionById(sessionId);
-  if (!session) throw new Error('SESSION_INVALID');
-  if (session.revoked_on) throw new Error('SESSION_INVALID');
+   // 1) session must exist + not revoked + not expired
+   const session = await authModel.getSessionById(sessionId);
+   if (!session) throw new Error('SESSION_INVALID');
+   if (session.revoked_on) throw new Error('SESSION_INVALID');
 
-  const sExp = new Date(session.expires_on);
-  if (Number.isNaN(sExp.getTime()) || sExp.getTime() < Date.now()) throw new Error('SESSION_INVALID');
+   const sExp = new Date(session.expires_on);
+   if (Number.isNaN(sExp.getTime()) || sExp.getTime() < Date.now()) throw new Error('SESSION_INVALID');
 
-  // 2) verify refresh signature/exp
-  const payload = verifyRefreshToken(refreshToken);
+   // 2) verify refresh signature/exp
+   const payload = verifyRefreshToken(refreshToken);
 
-  // 3) payload.sid must match cookie sid
-  if (payload.sid !== sessionId) throw new Error('SESSION_INVALID');
+   // 3) payload.sid must match cookie sid
+   if (payload.sid !== sessionId) throw new Error('SESSION_INVALID');
 
   // 4) check DB refresh row
   const row = await authModel.findRefreshTokenRow(refreshToken);

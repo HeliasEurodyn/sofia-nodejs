@@ -1,0 +1,61 @@
+services:
+  sofia-nodejs:
+    image: sofia-nodejs-dev
+    container_name: sofia-nodejs
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "3010:3010"
+      - "9229:9229"
+    env_file:
+      - src/.env
+    command: npm run dev
+    
+  database:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      UPLOAD_LIMIT: 300M
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 4824:80
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: root
+      UPLOAD_LIMIT: 300M
+      
+  code-server:
+    image: codercom/code-server
+    container_name: sofia-code
+    volumes:
+      - ./:/home/coder
+    ports:
+      - "8443:8080"
+    environment:
+      - PASSWORD=dev
+      
+  dozzle:
+    image: amir20/dozzle
+    container_name: dras-logs
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8081:8080"
+
+volumes:
+  db_data:
+  gitea_data:

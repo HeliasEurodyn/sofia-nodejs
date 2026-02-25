@@ -31,7 +31,7 @@ const GraphTemplateFormModel = require('../../models/form/GraphTemplateFormModel
    const remove = async ({ id, ctx }) => {
       const { userId } = ctx;
 
-      return GraphTemplateModel.remove({
+      return GraphTemplateModel.delete({
          id,
          userId
       });

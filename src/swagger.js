@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
 
 const options = {
   definition: {
@@ -10,11 +11,22 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3010',
+        url: 'http://ng-soc-rita-server.eurodyn.com:3010',
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    }
   },
-  apis: ['./routes/*.js'], // ΠΟΥ θα ψάξει για annotations
+  apis: [
+    path.join(__dirname, 'routes/**/*.js')
+   ]
 };
 
 const swaggerSpec = swaggerJsdoc(options);

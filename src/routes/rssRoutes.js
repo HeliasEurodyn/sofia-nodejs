@@ -30,7 +30,6 @@ function inferSeverity(title = '') {
   return 'low';
 }
 
-
 /**
  * @swagger
  * /api/rss:

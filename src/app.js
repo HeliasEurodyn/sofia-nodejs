@@ -18,11 +18,15 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
-app.use(cors());
-// app.use(cors({
-//   origin: 'http://localhost:5021',
-//   credentials: true
-// }));
+//app.use(cors()); 
+app.use(cors({
+  origin: [
+    'http://localhost:5021',
+    'http://ng-soc-rita-server.eurodyn.com:5021',
+    'http://localhost:4300'
+  ],
+  credentials: true
+}));
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -31,25 +35,6 @@ app.use('/api/sofia', sofiaRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 
-// error handler
-app.use((err, req, res, next) => {
-  const msg = err?.message;
-
-  if (msg === 'INVALID_CREDENTIALS') return res.status(401).json({ message: 'Invalid credentials' });
-  if (msg === 'USER_DISABLED') return res.status(403).json({ message: 'User disabled' });
-
-  if (msg === 'SESSION_MISSING') return res.status(401).json({ message: 'Missing session cookie' });
-  if (msg === 'SESSION_INVALID') return res.status(401).json({ message: 'Invalid session' });
-
-  if (msg === 'REFRESH_INVALID') return res.status(401).json({ message: 'Invalid refresh token' });
-  if (msg === 'REFRESH_REVOKED') return res.status(401).json({ message: 'Refresh token revoked' });
-  if (msg === 'REFRESH_EXPIRED') return res.status(401).json({ message: 'Refresh token expired' });
-
-  console.error(err);
-  return res.status(500).json({ message: 'Internal server error' });
-});
-
-module.exports = app;
 
 const notificationRoutes = require('./routes/NotificationRoutes');
 app.use('/api/notification', notificationRoutes);
@@ -71,6 +56,9 @@ app.use('/api/neo4j-settings', neo4jSettingsRoutes);
 const rssRoutes = require('./routes/rssRoutes');
 app.use('/api/rss', rssRoutes);
 
+const cpeRoutes = require('./routes/cpeRoutes');
+app.use('/api/list/cpe', cpeRoutes);
+
 /* LIST DepartmentListRoutes - START */
 const DepartmentListRoutes = require('./routes/list/DepartmentListRoutes');
 app.use('/api/list/department', DepartmentListRoutes);
@@ -91,3 +79,27 @@ app.use('/api/form/graph-template', GraphTemplateFormRoutes);
 const UserSettingsFormRoutes = require('./routes/form/UserSettingsFormRoutes');
 app.use('/api/form/user-settings', UserSettingsFormRoutes);
 /* FORM UserSettingsFormRoutes - END */
+/* LIST CpesListRoutes - START */
+const CpesListRoutes = require('./routes/list/CpesListRoutes');
+app.use('/api/list/cpes', CpesListRoutes);
+/* LIST CpesListRoutes - END */
+
+// error handler
+app.use((err, req, res, next) => {
+  const msg = err?.message;
+
+  if (msg === 'INVALID_CREDENTIALS') return res.status(401).json({ message: 'Invalid credentials' });
+  if (msg === 'USER_DISABLED') return res.status(403).json({ message: 'User disabled' });
+
+  if (msg === 'SESSION_MISSING') return res.status(401).json({ message: 'Missing session cookie' });
+  if (msg === 'SESSION_INVALID') return res.status(401).json({ message: 'Invalid session' });
+
+  if (msg === 'REFRESH_INVALID') return res.status(401).json({ message: 'Invalid refresh token' });
+  if (msg === 'REFRESH_REVOKED') return res.status(401).json({ message: 'Refresh token revoked' });
+  if (msg === 'REFRESH_EXPIRED') return res.status(401).json({ message: 'Refresh token expired' });
+
+  console.error(err);
+  return res.status(500).json({ message: 'Internal server error' });
+});
+
+module.exports = app;

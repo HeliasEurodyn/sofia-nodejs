@@ -4,11 +4,81 @@ const neo4jContext = require('../middleware/neo4jContext'); // ← MISSING
 const { authenticate } = require('../middleware/authenticate');
 
 const router = express.Router();
-// const service = new Neo4jService();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Neo4j
+ *   description: Neo4j graph operations
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     GraphNode:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         labels:
+ *           type: array
+ *           items:
+ *             type: string
+ *         properties:
+ *           type: object
+ *     GraphRelationship:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         type:
+ *           type: string
+ *         startNode:
+ *           type: string
+ *         endNode:
+ *           type: string
+ *         properties:
+ *           type: object
+ *     CypherQuery:
+ *       type: object
+ *       required:
+ *         - query
+ *       properties:
+ *         query:
+ *           type: string
+ */
 
 router.use(authenticate); 
 router.use(neo4jContext);
 
+/**
+ * @swagger
+ * /api/neo4j:
+ *   get:
+ *     summary: Get all nodes and relationships
+ *     tags: [Neo4j]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Graph data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nodes:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GraphNode'
+ *                 relationships:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GraphRelationship'
+ *       401:
+ *         description: Unauthorized
+ */
 
 router.get('/', async (req, res, next) => {
   try {
@@ -23,6 +93,31 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/neo4j/node/{id}:
+ *   get:
+ *     summary: Get node by ID
+ *     tags: [Neo4j]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Node found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GraphNode'
+ *       404:
+ *         description: Node not found
+ */
+
 router.get('/node/:id', async (req, res, next) => {
   try {
     const service = new Neo4jService(req.neo4jDriver);
@@ -34,6 +129,25 @@ router.get('/node/:id', async (req, res, next) => {
     next(e);
   }
 });
+
+/**
+ * @swagger
+ * /api/neo4j/node:
+ *   post:
+ *     summary: Create new node
+ *     tags: [Neo4j]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Node created
+ */
 
 router.post('/node', async (req, res, next) => {
   try {
@@ -47,6 +161,25 @@ router.post('/node', async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/neo4j/node/{id}:
+ *   delete:
+ *     summary: Delete node by ID
+ *     tags: [Neo4j]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Node deleted
+ */
+
 router.delete('/node/:id', async (req, res, next) => {
   try {
 
@@ -59,6 +192,27 @@ router.delete('/node/:id', async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/neo4j/nodes/positions:
+ *   put:
+ *     summary: Update multiple node positions
+ *     tags: [Neo4j]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *     responses:
+ *       204:
+ *         description: Positions updated
+ */
+
 router.put('/nodes/positions', async (req, res, next) => {
   try {
     const service = new Neo4jService(req.neo4jDriver);
@@ -69,6 +223,26 @@ router.put('/nodes/positions', async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/neo4j/query:
+ *   post:
+ *     summary: Execute custom Cypher query
+ *     tags: [Neo4j]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CypherQuery'
+ *     responses:
+ *       200:
+ *         description: Query result
+ *       400:
+ *         description: Invalid query
+ */
 router.post('/query', async (req, res, next) => {
   try {
     const service = new Neo4jService(req.neo4jDriver);
