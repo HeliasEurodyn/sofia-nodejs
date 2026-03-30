@@ -15,18 +15,20 @@ class Neo4jSettingsModel {
    * @returns {Promise<GraphTemplate[]>}
    */
   async getTemplatesFromDb() {
-
     const conn = await pool.getConnection();
 
-    const query = `
-      SELECT id, name, node_html_label, elements_style, is_default
-      FROM graph_template
-      ORDER BY sort_order
-    `;
+    try {
+      const query = `
+        SELECT id, name, node_html_label, elements_style, is_default
+        FROM graph_template
+        ORDER BY sort_order
+      `;
 
-    const [ rows ] = await conn.query(query);
-
-    return rows;
+      const [rows] = await conn.query(query);
+      return rows;
+    } finally {
+      conn.release();
+    }
   }
 }
 

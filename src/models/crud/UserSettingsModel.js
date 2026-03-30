@@ -6,7 +6,11 @@ module.exports = {
 
    tables : {
       user_settings: {
+         openvas_url: { type: 'varchar',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          id: { type: 'varchar',  primary: true,  autoIncrement: false,  isSaveStatement: true,  insert: true,  update: true },
+         openvas_password: { type: 'varchar',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
+         openvas_user: { type: 'varchar',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
+         openvas_port: { type: 'int',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          created_by: { type: 'varchar',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          created_on: { type: 'datetime',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
          modified_by: { type: 'varchar',  primary: false,  autoIncrement: false,  isSaveStatement: false,  insert: true,  update: true },
@@ -72,7 +76,7 @@ module.exports = {
          const user_settingsFilters = [id
          ];
          const [user_settings_results] = await conn.execute(
-         `SELECT id, created_by, created_on, modified_by, modified_on, neo4j_url, neo4j_user, neo4j_password
+         `SELECT openvas_url, id, openvas_password, openvas_user, openvas_port, created_by, created_on, modified_by, modified_on, neo4j_url, neo4j_user, neo4j_password
           FROM user_settings
          WHERE user_settings.id = ? `, user_settingsFilters );
 

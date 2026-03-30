@@ -22,7 +22,12 @@ async function searchCpes(
   );
 }
 
+async function getById(id) {
+  return cpeModel.getById(id);
+}
+
 module.exports = {
   getAllCpes,
-  searchCpes
+  searchCpes,
+  getById
 };

@@ -91,4 +91,6 @@ router.get('/', cpeController.getAllCpes);
  */
 router.post('/search', cpeController.searchCpes);
 
+router.get('/by-id', cpeController.getById);
+
 module.exports = router;

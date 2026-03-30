@@ -34,14 +34,26 @@ function convertValue(raw, type) {
 /* ---------------------------------------------------------
  * Helpers for schemas
  * --------------------------------------------------------- */
-function extractKeyFields(tableSchema) {
-  const keys = [];
+// function extractKeyFields(tableSchema) {
+//   const keys = [];
 
-  for (const [field, config] of Object.entries(tableSchema)) {
-    if (config.primary || config.isSaveStatement) keys.push(field);
-  }
+//   for (const [field, config] of Object.entries(tableSchema)) {
+//     if (config.primary || config.isSaveStatement) keys.push(field);
+//   }
 
-  return keys;
+//   return keys;
+// }
+
+function extractPrimaryFields(schema) {
+  return Object.entries(schema)
+    .filter(([_, c]) => c.primary)
+    .map(([f]) => f);
+}
+
+function extractScopeFields(schema) {
+  return Object.entries(schema)
+    .filter(([_, c]) => c.isSaveStatement)
+    .map(([f]) => f);
 }
 
 function sanitizeForInsert(tableSchema, data) {
@@ -137,7 +149,7 @@ function buildUpdateQuery(table, update, where) {
  * Determine if we should INSERT
  * --------------------------------------------------------- */
 function shouldInsert(tableSchema, data) {
-  const keyFields = extractKeyFields(tableSchema);
+  const keyFields = extractPrimaryFields(tableSchema);
 
   for (const field of keyFields) {
     const value = data[field];
@@ -152,33 +164,36 @@ function shouldInsert(tableSchema, data) {
 /* ---------------------------------------------------------
  * DELETE ... WHERE (keys...) NOT IN (...)
  * --------------------------------------------------------- */
-function buildDeleteNotInQuery(table, keyFields, dataArray) {
-  if (!keyFields.length) {
-    throw new Error("deleteMissing requires keyFields");
+function buildDeleteNotInQuery(table, primaryFields, scopeFields, dataArray) {
+
+  if (!primaryFields.length) {
+    throw new Error("deleteMissing requires primary fields");
   }
 
   if (!Array.isArray(dataArray) || dataArray.length === 0) {
-    throw new Error("deleteMissing requires at least one element in data[]");
+    throw new Error("deleteMissing requires at least one element");
   }
 
   const params = {};
-  const tuples = dataArray.map((row, idx) => {
-    const placeholders = keyFields.map(field => {
-      const paramName = `p_${idx}_${field}`;
-      params[paramName] = row[field];
-      return `:${paramName}`;
-    });
 
-    return `(${placeholders.join(', ')})`;
+  // primary ids
+  const ids = dataArray.map((row, idx) => {
+    const paramName = `p_${idx}`;
+    params[paramName] = row[primaryFields[0]]; // assume 1 PK (id)
+    return `:${paramName}`;
   });
 
-  const keyListSql = keyFields.map(f => `\`${f}\``).join(', ');
+  // scope filters (π.χ. scenario_id)
+  const scopeConditions = scopeFields.map(f => `\`${f}\` = :scope_${f}`);
+
+  for (const f of scopeFields) {
+    params[`scope_${f}`] = dataArray[0][f];
+  }
 
   const sql = `
     DELETE FROM \`${table}\`
-    WHERE (${keyListSql}) NOT IN (
-      ${tuples.join(', ')}
-    )
+    WHERE ${scopeConditions.join(' AND ')}
+    AND \`${primaryFields[0]}\` NOT IN (${ids.join(', ')})
   `;
 
   return { sql, params };
@@ -276,14 +291,28 @@ class ModelHelper {
     return this.update(conn, table, schema, data);
   }
 
-  static async deleteMissing(conn, table, schema, rows) {
-    const keyFields = extractKeyFields(schema);
+  static async shouldInsert(tableSchema, data) {
+    const keyFields = extractPrimaryFields(tableSchema);
 
-    if (!keyFields.length) {
-      throw new Error("deleteMissing requires primary/isSaveStatement keys");
+    for (const field of keyFields) {
+      const value = data[field];
+      if (value === undefined || value === null || value === '') {
+        return true;
+      }
+  }
+
+  return false;
+}
+
+  static async deleteMissing(conn, table, schema, rows) {
+    const primaryFields = extractPrimaryFields(schema);
+    const scopeFields = extractScopeFields(schema);
+
+    if (!primaryFields.length) {
+      throw new Error("deleteMissing requires primary keys");
     }
 
-    const { sql, params } = buildDeleteNotInQuery(table, keyFields, rows);
+    const { sql, params } = buildDeleteNotInQuery(table, primaryFields, scopeFields, rows);
     const [res] = await conn.query(sql, params);
     return res;
   }

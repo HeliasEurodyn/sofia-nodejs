@@ -12,44 +12,6 @@ module.exports = {
       }
    },
 
-   create: async (data) => {
-      let sql, params, res;
-      const conn = await pool.getConnection();
-
-      try {
-         await conn.beginTransaction();
-
-         await conn.commit();
-
-         return data;
-
-      } catch (err) {
-         await conn.rollback();
-         throw err;
-      } finally {
-         conn.release();
-      }
-   },
-
-   update: async (data) => {
-      let sql, params, res;
-      const conn = await pool.getConnection();
-
-      try {
-         await conn.beginTransaction();
-
-         await conn.commit();
-
-         return data;
-
-      } catch (err) {
-         await conn.rollback();
-         throw err;
-      } finally {
-         conn.release();
-      }
-   },
-
    getById: async (id) => {
       const conn = await pool.getConnection();
       const data = {};
@@ -61,10 +23,13 @@ module.exports = {
          const userFilters = {
             user_obj_id: id
          };
+
          const [user_results] = await conn.query(
          `SELECT username, id, email
-          FROM  ( SELECT id ,  username ,  email   FROM  user  ) user
-         WHERE user.id = :user_obj_id;`, userFilters );
+            FROM user
+            WHERE user.id = ?;`,
+         [id]
+         );
 
          let user = {};
          data.user_obj = {};
@@ -84,50 +49,12 @@ module.exports = {
    },
 
    getUsers: async (id) => {
-      const conn = await pool.getConnection();
-      const data = {};
-
-      try {
-
-         /* SELECTION QUERY - user - */
-
-         const userFilters = {
-            user_obj_id: id
-         };
-         const [user_results] = await conn.query(
-         `SELECT username, id, email
-          FROM  ( SELECT id ,  username ,  email   FROM  user  ) user;`, userFilters );
-
-         return user_results;
-
-      } catch (err) {
-         throw err;
-      } finally {
-         conn.release();
-      }
+    const [rows] = await pool.query(`SELECT username, id, email FROM user;`);
+    return rows;
    },
 
 
-   delete: async (id) => {
-      const conn = await pool.getConnection();
-      const data = {};
-      try {
-         await conn.beginTransaction();
 
-         /* SELECT KEYS FROM DATABASE */
-
-
-         /* DELETE FROM DATABASE USING KEYS */
-
-         await conn.commit();
-
-      } catch (err) {
-         await conn.rollback();
-         throw err;
-      } finally {
-         conn.release();
-      }
-   }
 
 }
 

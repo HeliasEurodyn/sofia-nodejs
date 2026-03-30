@@ -19,4 +19,31 @@ module.exports = {
       }
    },
 
+   defineOnlyDefault: async (id) => {
+
+      const conn = await pool.getConnection();
+    
+      try {
+        await conn.beginTransaction();
+    
+        const query = `
+          UPDATE graph_template
+          SET is_default = CASE 
+            WHEN id = ? THEN 1
+            ELSE 0
+          END
+        `;
+    
+        await conn.execute(query, [id]);
+    
+        await conn.commit();
+    
+      } catch (err) {
+        await conn.rollback();
+        throw err;
+      } finally {
+        conn.release();
+      }
+  },
+
 }

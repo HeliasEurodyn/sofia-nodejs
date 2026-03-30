@@ -8,7 +8,8 @@ const pool = mysql.createPool({
   database: 'ngsoc',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
+  queueLimit: 200,
+  connectTimeout: 20000,
   namedPlaceholders: true
 });
 

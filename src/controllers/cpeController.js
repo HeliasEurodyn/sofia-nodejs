@@ -39,7 +39,17 @@ async function searchCpes(req, res, next) {
   }
 }
 
+async function getById(req, res, next) {
+  try {
+    const data = await cpeService.getById(req.query.id);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAllCpes,
-  searchCpes
+  searchCpes,
+  getById
 };

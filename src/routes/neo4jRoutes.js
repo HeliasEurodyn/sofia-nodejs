@@ -84,8 +84,21 @@ router.get('/', async (req, res, next) => {
   try {
     const service = new Neo4jService(req.neo4jDriver);
     const [nodes, relationships] = await Promise.all([
-      service.getAllNodes(),
-      service.getAllRelationships()
+      service.getDefaultNodes(),
+      service.getDefaultRelationships()
+    ]);
+    res.json({ nodes, relationships });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.get('/navigation/:id', async (req, res, next) => {
+  try {
+    const service = new Neo4jService(req.neo4jDriver);
+    const [nodes, relationships] = await Promise.all([
+      service.getNodesByNavigation(req),
+      service.getRelationshipsByNavigation(req)
     ]);
     res.json({ nodes, relationships });
   } catch (e) {
@@ -155,6 +168,18 @@ router.post('/node', async (req, res, next) => {
     const service = new Neo4jService(req.neo4jDriver);
 
     const node = await service.createNode(req.body);
+    res.json(node);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.put('/node/:id', async (req, res, next) => {
+  try {
+
+    const service = new Neo4jService(req.neo4jDriver);
+
+    const node = await service.updateNode(req.body, req.params.id);
     res.json(node);
   } catch (e) {
     next(e);
@@ -253,6 +278,63 @@ router.post('/query', async (req, res, next) => {
     }
     const result = await service.runQuery(query);
     res.json(result);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.get('/relationships', async (req, res, next) => {
+  try {
+    const service = new Neo4jService(req.neo4jDriver);
+    const relationships = await service.getAllRelationships();
+    res.json(relationships);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.get('/relationship/:id', async (req, res, next) => {
+  try {
+    const service = new Neo4jService(req.neo4jDriver);
+    const rel = await service.getRelationshipById(req.params.id);
+
+    if (!rel) return res.sendStatus(404);
+
+    res.json(rel);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post('/relationship', async (req, res, next) => {
+  try {
+    const service = new Neo4jService(req.neo4jDriver);
+    const rel = await service.createRelationship(req.body);
+    res.json(rel);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.put('/relationship/:id', async (req, res, next) => {
+  try {
+    const service = new Neo4jService(req.neo4jDriver);
+    const rel = await service.updateRelationship(req.params.id, req.body);
+
+    if (!rel) return res.sendStatus(404);
+
+    res.json(rel);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.delete('/relationship/:id', async (req, res, next) => {
+  try {
+    const service = new Neo4jService(req.neo4jDriver);
+    await service.deleteRelationshipById(req.params.id);
+
+    res.json({ message: 'Relationship deleted successfully.' });
   } catch (e) {
     next(e);
   }

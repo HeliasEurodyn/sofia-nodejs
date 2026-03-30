@@ -13,25 +13,37 @@ const GraphTemplateFormModel = require('../../models/form/GraphTemplateFormModel
    const create = async ({ data, ctx }) => {
       const { userId } = ctx;
 
-      return GraphTemplateModel.create({
+      const result = GraphTemplateModel.create({
          data,
          userId
       });
+      
+      if(result.graph_template_obj.is_default){  
+         await GraphTemplateFormModel.defineOnlyDefault(result.graph_template_obj.id);
+      }
+      
+      return result;
    };
 
    const update = async ({ data, ctx }) => {
       const { userId } = ctx;
 
-      return GraphTemplateModel.update({
+      const result = GraphTemplateModel.update({
          data,
          userId
       });
+      
+      if(data.graph_template_obj.is_default){  
+         await GraphTemplateFormModel.defineOnlyDefault(data.graph_template_obj.id);
+      }
+      
+      return result;
    };
 
    const remove = async ({ id, ctx }) => {
       const { userId } = ctx;
 
-      return GraphTemplateModel.delete({
+      return GraphTemplateModel.remove({
          id,
          userId
       });

@@ -6,10 +6,11 @@ const CPE_INDEX = process.env.CPE_INDEX;
 async function executeSearch(query) {
 
   console.log(JSON.stringify(query, null, 2));
-  
+    console.log('query');
+    console.log(query);
   const url = buildElasticSearchUrl(ELASTIC_URL, CPE_INDEX);
   console.log(url);
-  
+
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -60,6 +61,34 @@ async function searchCpes(
   });
 }
 
+/**
+ * Same logic as Java getCveById
+ */
+async function getById(id) {
+  console.log(id);
+
+  const query = {
+    query: {
+      wildcard: {
+        cpeName: id
+      }
+    }
+  };
+
+  console.log(JSON.stringify(query));
+
+  const hits = await executeSearch(query);
+
+  if (!hits.length) {
+    return {
+      error: 'CPE not found',
+      id: id
+    };
+  }
+
+  return hits[0];
+}
+
 function wildcard(field, value) {
   return {
     wildcard: {
@@ -71,7 +100,9 @@ function wildcard(field, value) {
   };
 }
 
+
 module.exports = {
   getAllCpes,
-  searchCpes
+  searchCpes,
+  getById
 };
